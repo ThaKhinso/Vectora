@@ -1,7 +1,5 @@
 #pragma once
 #include "Events/Event.h"
-#include <sstream>
-#include <strstream>
 
 namespace Vectora {
 	class VECTORA_API WindowResizeEvent : public Event

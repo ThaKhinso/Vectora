@@ -1,7 +1,5 @@
 #pragma once
 #include "Events/Event.h"
-#include <strstream>
-#include <sstream>
 
 namespace Vectora {
 	class VECTORA_API MouseMovedEvent : public Event

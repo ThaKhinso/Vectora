@@ -1,7 +1,7 @@
 #pragma once
 #include "Core.h"
-#include <string>
-#include <functional>
+
+#include "vpch.h"
 
 namespace Vectora {
 
@@ -10,8 +10,8 @@ namespace Vectora {
 		WindowClose, WindowResize, WindowFocused, WindowLostFocus, WindowMoved,
 		AppTick, AppUpdate, AppRender,
 		KeyPressed, KeyReleased, KeyTyped,
-		MouseButtonPressed, MouseButtonReleased, MouseScrolled, MouseMoved,
-	};
+		MouseButtonPressed, MouseButtonReleased, MouseScrolled, MouseMoved, DRERII
+	}; 
 
 	enum EventCategory {
 		None = 0,
@@ -22,6 +22,11 @@ namespace Vectora {
 		EventCategoryMouseButton = BIT(4),
 
 	};
+	// Operator overloading. This allows you to do: CategoryA | CategoryB
+
+	inline EventCategory operator|(EventCategory a, EventCategory b) {
+		return static_cast<EventCategory>(static_cast<int>(a) | static_cast<int>(b));
+	}
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\
 								virtual EventType GetEventType() const override { return GetStaticType(); }\
 								virtual const char* GetName() const override { return #type; }
@@ -63,3 +68,12 @@ namespace Vectora {
 		return os << e.ToString();
 	}
 }
+
+
+template <typename T>
+struct fmt::formatter<T, std::enable_if_t<std::is_base_of<Vectora::Event, T>::value, char>> :
+	fmt::formatter<std::string> {
+	auto format(const Vectora::Event& e, format_context& ctx) const {
+		return fmt::formatter<std::string>::format(e.ToString(), ctx);
+	}
+};

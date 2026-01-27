@@ -88,6 +88,10 @@ target_link_libraries(${V_ENGINE_TARGET} PUBLIC
     OpenGL::GL
 )
 
+target_precompile_headers(${V_ENGINE_TARGET} PRIVATE 
+    Vectora_Engine/vpch.h
+)
+
 add_executable(${V_EDITOR_TARGET} ${EDITOR})
 target_include_directories(${V_EDITOR_TARGET} PRIVATE
     ${CMAKE_SOURCE_DIR}/Vectora_Editor

@@ -1,14 +1,19 @@
 #pragma once
 #include "Core.h"
 #include "spdlog/spdlog.h"
-#include <memory>
+#include "spdlog/fmt/ostr.h"
+
 
 namespace Vectora {
 	class VECTORA_API Log
 	{
 	public:
-		Log();
-		~Log();
+		Log() {
+
+		}
+		~Log() {
+
+		}
 		static void Init();
 		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; };
 		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; };
@@ -24,7 +29,7 @@ namespace Vectora {
 #define V_CORE_TRACE(...)	::Vectora::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define V_CORE_FATAL(...)	::Vectora::Log::GetCoreLogger()->fatal(__VA_ARGS__)
 
-#define V_ERROR(...)	::Vectora::Log::GetClientLogger()->error(__VA_ARGS__)
+#define VE_ERROR(...)	::Vectora::Log::GetClientLogger()->error(__VA_ARGS__)
 #define V_WARN(...)		::Vectora::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define V_INFO(...)		::Vectora::Log::GetClientLogger()->info(__VA_ARGS__)
 #define V_TRACE(...)	::Vectora::Log::GetClientLogger()->trace(__VA_ARGS__)
