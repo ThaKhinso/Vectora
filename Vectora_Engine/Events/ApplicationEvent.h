@@ -1,6 +1,7 @@
 #pragma once
 #include "Events/Event.h"
 
+
 namespace Vectora {
 	class VECTORA_API WindowResizeEvent : public Event
 	{
@@ -18,7 +19,7 @@ namespace Vectora {
 			ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
 			return ss.str();
 		}
-
+		
 		EVENT_CLASS_TYPE(WindowResize)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	private:

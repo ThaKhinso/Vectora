@@ -1,6 +1,6 @@
 #pragma once
 #include "Core.h"
-
+#include "Events/Event.h"
 #include "vpch.h"
 
 namespace Vectora {
@@ -27,6 +27,7 @@ namespace Vectora {
 	inline EventCategory operator|(EventCategory a, EventCategory b) {
 		return static_cast<EventCategory>(static_cast<int>(a) | static_cast<int>(b));
 	}
+
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\
 								virtual EventType GetEventType() const override { return GetStaticType(); }\
 								virtual const char* GetName() const override { return #type; }

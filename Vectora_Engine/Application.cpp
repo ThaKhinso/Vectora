@@ -32,7 +32,16 @@ namespace Vectora {
 
 	void Application::OnEvent(Event& e)
 	{
-		VE_CORE_INFO("{0}", e);
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClosed));
+		VE_CORE_TRACE("{0}", e);
+		
+	}
+
+	bool Application::OnWindowClosed(WindowCloseEvent& e)
+	{
+		m_Running = false;
+		return true;
 	}
 
 	
