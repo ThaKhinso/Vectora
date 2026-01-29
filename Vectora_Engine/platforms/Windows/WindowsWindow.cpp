@@ -6,6 +6,8 @@
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 
+#include <glad/glad.h>
+
 namespace Vectora {
 
 	static bool s_GLFWInitialized = false;
@@ -61,6 +63,10 @@ namespace Vectora {
 		}
 		m_Window = glfwCreateWindow(prop.width, prop.height, prop.title, nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
+
+		int success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		VE_CORE_ASSERT(success, "Failed to initialize glad! {0}");
+
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 
