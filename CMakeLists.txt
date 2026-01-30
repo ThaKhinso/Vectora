@@ -77,12 +77,32 @@ file(GLOB_RECURSE EDITOR CONFIGURE_DEPENDS
     Vectora_Editor/*.h
 )
 
+add_library(imgui_static STATIC 
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_demo.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
+target_include_directories(imgui_static PUBLIC
+    ${imgui_SOURCE_DIR}
+)
+
+target_link_libraries(imgui_static PRIVATE
+    glfw
+    OpenGL::GL
+)
+
 add_library(${VE_ENGINE_TARGET} SHARED ${ENGINE})
 
 # Include your own headers
 target_include_directories(${VE_ENGINE_TARGET} PUBLIC
     ${CMAKE_SOURCE_DIR}/Vectora_Engine
     ${CMAKE_SOURCE_DIR}/includes
+    ${imgui_SOURCE_DIR}
 )
 
 target_compile_definitions(${VE_ENGINE_TARGET} PRIVATE VE_BUILD_DLL VE_PLATFORM_WINDOWS GLFW_INCLUDE_NONE)
@@ -91,8 +111,11 @@ target_compile_definitions(${VE_ENGINE_TARGET}
         $<$<CONFIG:Debug>:VE_ENABLE_ASSERTS>
 )
 
+
+
 # Link libraries
 target_link_libraries(${VE_ENGINE_TARGET} PUBLIC
+    imgui_static
     glfw
     glm::glm
     spdlog::spdlog
