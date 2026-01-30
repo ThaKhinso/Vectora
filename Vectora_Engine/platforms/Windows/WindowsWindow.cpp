@@ -64,6 +64,7 @@ namespace Vectora {
 		m_Window = glfwCreateWindow(prop.width, prop.height, prop.title, nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
 
+		// Initialize glad here
 		int success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		VE_CORE_ASSERT(success, "Failed to initialize glad! {0}");
 

@@ -15,6 +15,8 @@ namespace Vectora {
 		inline VE_UINT GetWidth() const override { return m_Data.Width; }
 		inline VE_UINT GetHeight() const override { return m_Data.Height; }
 
+		inline void* GetNativeWindow() const override { return m_Window; };
+
 		inline void SetEventCallback(const EventCallbackFn& callback) override {
 			this->m_Data.EventCallback = callback;
 		}

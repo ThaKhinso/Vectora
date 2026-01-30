@@ -20,6 +20,7 @@ class SandBox : public Vectora::Application {
 public:
     SandBox() {
 		PushLayer(new TestLayer() );
+        PushOverlay(new Vectora::ImGuiLayer());
     }
     ~SandBox() {
 

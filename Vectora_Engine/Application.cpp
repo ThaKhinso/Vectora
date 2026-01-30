@@ -2,17 +2,24 @@
 #include "vpch.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_glfw.h"
+#include <imgui.h>
+
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 
 namespace Vectora {
+	Application* Application::s_Instance = nullptr;
+
 	Application::Application()
 	{
+		VE_CORE_ASSERT(!s_Instance, "Application already exists!");
+		s_Instance = this;
+
 		window = std::unique_ptr<Window>(Window::Create());
-		window.get()->SetEventCallback(
-			[&](Event& e) {this->OnEvent(e); }
-		);
 		window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 	}
 
@@ -29,6 +36,17 @@ namespace Vectora {
 
 			for (auto& layer : layerstack)
 				layer->OnUpdate();
+			/*ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGuiIO& io = ImGui::GetIO();
+
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				GLFWwindow* backup_current_context = glfwGetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				glfwMakeContextCurrent(backup_current_context);
+			}*/
 
 			window->OnUpdate();
 		}
@@ -51,11 +69,13 @@ namespace Vectora {
 	void Application::PushLayer(Layer* layer)
 	{
 		layerstack.PushLayer(layer);
+		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* overlay)
 	{
 		layerstack.PushOverlay(overlay);
+		overlay->OnAttach();
 	}
 
 	bool Application::OnWindowClosed(WindowCloseEvent& e)

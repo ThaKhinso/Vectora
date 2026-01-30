@@ -22,6 +22,8 @@ namespace Vectora {
 		virtual void OnUpdate() = 0;
 		virtual VE_UINT GetWidth() const = 0;
 		virtual VE_UINT GetHeight() const = 0;
+
+		virtual void* GetNativeWindow() const = 0;
 		// Window attributes
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 		virtual void SetVSync(bool enabled) = 0;
