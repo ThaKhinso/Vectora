@@ -100,7 +100,7 @@ file(GLOB_RECURSE EDITOR CONFIGURE_DEPENDS
 
 
 
-add_library(${VE_ENGINE_TARGET} SHARED ${ENGINE})
+add_library(${VE_ENGINE_TARGET} STATIC ${ENGINE})
 add_dependencies(${VE_ENGINE_TARGET} imgui_static)
 # Include your own headers
 target_include_directories(${VE_ENGINE_TARGET} PUBLIC
@@ -109,7 +109,7 @@ target_include_directories(${VE_ENGINE_TARGET} PUBLIC
     ${imgui_SOURCE_DIR}
 )
 
-target_compile_definitions(${VE_ENGINE_TARGET} PRIVATE VE_BUILD_DLL VE_PLATFORM_WINDOWS GLFW_INCLUDE_NONE)
+target_compile_definitions(${VE_ENGINE_TARGET} PRIVATE VE_BUILD_STATIC VE_PLATFORM_WINDOWS GLFW_INCLUDE_NONE)
 target_compile_definitions(${VE_ENGINE_TARGET}
     PRIVATE
         $<$<CONFIG:Debug>:VE_ENABLE_ASSERTS>
@@ -135,7 +135,7 @@ target_include_directories(${VE_EDITOR_TARGET} PRIVATE
     ${CMAKE_SOURCE_DIR}/Vectora_Editor
     ${CMAKE_SOURCE_DIR}/includes
 )
-target_compile_definitions(${VE_EDITOR_TARGET} PRIVATE VE_PLATFORM_WINDOWS)
+target_compile_definitions(${VE_EDITOR_TARGET} PRIVATE VE_BUILD_STATIC VE_PLATFORM_WINDOWS)
 target_link_libraries(${VE_EDITOR_TARGET} PUBLIC ${VE_ENGINE_TARGET})
 
 

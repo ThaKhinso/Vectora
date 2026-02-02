@@ -70,13 +70,13 @@ namespace Vectora {
 	void Application::PushLayer(Layer* layer)
 	{
 		layerstack.PushLayer(layer);
-		layer->OnAttach();
+		
 	}
 
 	void Application::PushOverlay(Layer* overlay)
 	{
 		layerstack.PushOverlay(overlay);
-		overlay->OnAttach();
+		
 	}
 
 	bool Application::OnWindowClosed(WindowCloseEvent& e)

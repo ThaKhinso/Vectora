@@ -2,7 +2,9 @@
 #include <stdint.h>
 
 #ifdef VE_PLATFORM_WINDOWS
-    #ifdef VE_BUILD_DLL
+    #if defined(VE_BUILD_STATIC)
+        #define VECTORA_API
+    #elif defined(VE_BUILD_DLL)
         #define VECTORA_API __declspec(dllexport)
     #else
         #define VECTORA_API __declspec(dllimport)
