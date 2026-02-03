@@ -5,6 +5,8 @@
 #include "imgui/ImGuiLayer.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
+#include "Renderer/Shader.h"
+#include "Renderer/Buffer.h"
 
 
 namespace Vectora {
@@ -27,11 +29,14 @@ namespace Vectora {
 		inline static Application& Get() { return *s_Instance; }
 	private:
 		std::unique_ptr<Window> window;
+		std::unique_ptr<Shader> m_Shader;
 		ImGuiLayer* m_ImguiLayer;
 		LayerStack layerstack;
 		bool m_Running = true;
 		static Application* s_Instance;
-		unsigned int m_VertexBuffer, m_IndexArray, m_VertexArray;
+		unsigned int m_VertexArray;
+		std::unique_ptr<VertexBuffer> m_VertexBuffer;
+		std::unique_ptr<IndexBuffer> m_IndexBuffer;
 	};
 	Application* CreateApplication();
 }

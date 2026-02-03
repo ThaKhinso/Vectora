@@ -9,6 +9,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <stdint.h>
 #include <unordered_map>
 #include <unordered_set>
 
