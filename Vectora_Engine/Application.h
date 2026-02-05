@@ -7,7 +7,7 @@
 #include "Events/ApplicationEvent.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
-
+#include "Renderer/VertexArray.h"
 
 namespace Vectora {
 	class VECTORA_API Application
@@ -29,14 +29,18 @@ namespace Vectora {
 		inline static Application& Get() { return *s_Instance; }
 	private:
 		std::unique_ptr<Window> window;
-		std::unique_ptr<Shader> m_Shader;
+		
 		ImGuiLayer* m_ImguiLayer;
 		LayerStack layerstack;
 		bool m_Running = true;
 		static Application* s_Instance;
-		unsigned int m_VertexArray;
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;
+		
+
+		std::shared_ptr<VertexArray> m_VertexArray;
+		std::shared_ptr<Shader> m_Shader;
+
+		std::shared_ptr<VertexArray> m_SquareVA;
+		std::shared_ptr<Shader> m_BlueShader;
 	};
 	Application* CreateApplication();
 }
