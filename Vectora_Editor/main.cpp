@@ -5,7 +5,7 @@
 class TestLayer : public Vectora::Layer {
 public:
     TestLayer()
-    : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
+    : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f), m_CubePosition(0.0f)
 	{
 		
 		m_Shader = std::make_shared<Vectora::Shader>("shaders/vertex.glsl", "shaders/fragment.glsl");
@@ -43,10 +43,10 @@ public:
 
 		m_SquareVA.reset(Vectora::VertexArray::Create());
 		float squareVertices[3 * 4] = {
-			-0.75f, -0.75f, 0.0f,
-			 0.75f, -0.75f, 0.0f,
-			 0.75f,  0.75f, 0.0f,
-			-0.75f,  0.75f, 0.0f
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.5f,  0.5f, 0.0f,
+			-0.5f,  0.5f, 0.0f
 		};
 
 		std::shared_ptr<Vectora::VertexBuffer> squareVB;
@@ -80,6 +80,15 @@ public:
 		else if (Vectora::Input::IsKeyPressed(VE_KEY_UP))
 			m_CameraPosition.y -= m_CameraMoveSpeed * ts;
 
+		if (Vectora::Input::IsKeyPressed(VE_KEY_J))
+			m_CubePosition.x -= m_CubeMoveSpeed * ts;
+		else if (Vectora::Input::IsKeyPressed(VE_KEY_L))
+			m_CubePosition.x += m_CubeMoveSpeed * ts;
+		if (Vectora::Input::IsKeyPressed(VE_KEY_I))
+			m_CubePosition.y -= m_CubeMoveSpeed * ts;
+		else if (Vectora::Input::IsKeyPressed(VE_KEY_K))
+			m_CubePosition.y += m_CubeMoveSpeed * ts;
+
 		if (Vectora::Input::IsKeyPressed(VE_KEY_A))
 			m_CameraRotation += m_CameraRotationSpeed * ts;
 		else if (Vectora::Input::IsKeyPressed(VE_KEY_D))
@@ -92,10 +101,21 @@ public:
 		m_Camera.SetRotation(m_CameraRotation);
 
 		Vectora::Renderer::BeginScence(m_Camera);
-		m_BlueShader->Bind();
-		Vectora::Renderer::Submit(m_BlueShader, m_SquareVA);
+		
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
-		m_SquareVA->Bind();
+		for (int y = 0; y < 20; y++)
+		{
+			for (int x = 0; x < 20; x++)
+			{
+				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos ) * scale;
+				transform = glm::translate(transform, m_CubePosition);
+				Vectora::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
+			}
+		}
+
+		
 		Vectora::Renderer::Submit(m_Shader, m_VertexArray);
 
 		Vectora::Renderer::EndScene();
@@ -117,6 +137,9 @@ private:
 	float m_CameraMoveSpeed = 1.f;
 	float m_CameraRotation = 0.f;
 	float m_CameraRotationSpeed = 180.f;
+
+	glm::vec3 m_CubePosition;
+	float m_CubeMoveSpeed = 1.f;
 };
 
 class SandBox : public Vectora::Application {

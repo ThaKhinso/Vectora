@@ -164,7 +164,7 @@ namespace Vectora {
 		glUniform2f(glGetUniformLocation(RenderID, name.c_str()), v1, v2);
 	};
 
-	void Shader::setMat4(const std::string& name, glm::mat4& trans) {
+	void Shader::setMat4(const std::string& name, const glm::mat4& trans) {
 		glUniformMatrix4fv(glGetUniformLocation(RenderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(trans));
 	}
 
