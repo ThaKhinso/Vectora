@@ -1,6 +1,6 @@
 #include "Renderer.h"
 #include "vpch.h"
-
+#include "platforms/OpenGL/OpenGLShader.h"
 
 namespace Vectora {
 	Renderer::SceneData* Renderer::sceneData = new Renderer::SceneData;
@@ -12,11 +12,11 @@ namespace Vectora {
 	{
 
 	}
-	void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform)
+	void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		shader->Bind();
-		shader->setMat4("u_ViewProjection", sceneData->ViewProjectionMatrix);
-		shader->setMat4("u_Transform", transform);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->setMat4("u_ViewProjection", sceneData->ViewProjectionMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->setMat4("u_Transform", transform);
 
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);

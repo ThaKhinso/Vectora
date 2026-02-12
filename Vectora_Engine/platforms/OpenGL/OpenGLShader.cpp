@@ -1,4 +1,5 @@
 #include "OpenGLShader.h"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Vectora {
 	void OpenGLShader::getShaderCompilationError(unsigned int shaderID, GLenum ERROR_TYPE, ShaderType type) {
@@ -31,7 +32,7 @@ namespace Vectora {
 	}
 
 	OpenGLShader::OpenGLShader(std::string vertexShaderPath, std::string fragmentShaderPath)
-	:Shader("bla", "bla") {
+	 {
 		loadShaders(vertexShaderPath, fragmentShaderPath);
 	};
 
@@ -50,12 +51,12 @@ namespace Vectora {
 		loadFragmentShader(fragmentShaderPath);
 	}
 
-	void OpenGLShader::Bind()
+	void OpenGLShader::Bind() const 
 	{
 		glUseProgram(RenderID);
 	}
 
-	void OpenGLShader::UnBind()
+	void OpenGLShader::UnBind() const
 	{
 		glUseProgram(0);
 	}
@@ -101,7 +102,7 @@ namespace Vectora {
 
 		if (mode == ShaderCreationMode::BOTH_FROM_FILE)
 		{
-			compileVertexShader();
+			this->compileVertexShader();
 			compileFragmentShader();
 			linkShaders();
 		}
@@ -119,7 +120,7 @@ namespace Vectora {
 
 	};
 
-	void OpenGLShader::useProgram() {
+	void OpenGLShader::useProgram() const {
 		glUseProgram(RenderID);
 	};
 
@@ -162,11 +163,16 @@ namespace Vectora {
 		glUniform2f(glGetUniformLocation(RenderID, name.c_str()), v1, v2);
 	}
 
+	void OpenGLShader::setVec3(const std::string& name, const glm::vec3& vec4) const
+	{
+		glUniform3f(glGetUniformLocation(RenderID, name.c_str()), vec4.x, vec4.y, vec4.z);
+	}
+
 	void OpenGLShader::setVec4(const std::string& name, const glm::vec4& vec4) const
 	{
 		glUniform4f(glGetUniformLocation(RenderID, name.c_str()), vec4.x, vec4.y, vec4.z, vec4.w);
 	}
-	;
+	
 
 	void OpenGLShader::setMat4(const std::string& name, const glm::mat4& trans) const {
 		glUniformMatrix4fv(glGetUniformLocation(RenderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(trans));

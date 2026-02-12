@@ -35,7 +35,7 @@ namespace Vectora {
 			this->m_Running = run;
 		}
 	private:
-		std::unique_ptr<Window> window;
+		Scope<Window> window;
 		ImGuiLayer* m_ImguiLayer;
 		LayerStack layerstack;
 		bool m_Running = true;

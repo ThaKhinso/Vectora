@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <memory>
 
 #ifdef VE_PLATFORM_WINDOWS
     #if defined(VE_BUILD_STATIC)
@@ -23,6 +24,14 @@
 #define VE_ASSERT(x, ...)
 #define VE_CORE_ASSERT(x, ...)
 #endif
+
+namespace Vectora {
+    template<typename T>
+    using Scope = std::unique_ptr<T>;
+
+    template<typename T>
+    using Ref = std::shared_ptr<T>;
+}
 
 #define VE_UINT uint64_t
 #define VE_UINT8 uint8_t

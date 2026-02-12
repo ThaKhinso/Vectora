@@ -6,6 +6,6 @@ namespace Vectora {
 	public:
 		virtual void Clear() override final;
 		virtual void SetClearColor(const glm::vec4& color) override final;
-		virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) override final;
+		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray) override final;
 	};
 }
