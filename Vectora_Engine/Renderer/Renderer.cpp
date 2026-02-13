@@ -8,6 +8,11 @@ namespace Vectora {
 	{
 		sceneData->ViewProjectionMatrix = camera.GetPV();
 	}
+
+	void Renderer::Init() {
+		RenderCommand::Init();
+	}
+
 	void Renderer::EndScene()
 	{
 

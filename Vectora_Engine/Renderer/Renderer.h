@@ -9,6 +9,7 @@ namespace Vectora {
 	class VECTORA_API Renderer
 	{
 	public:
+		static void Init();
 		static void BeginScence(OrthoGraphicCamera& camera);
 		static void EndScene();
 

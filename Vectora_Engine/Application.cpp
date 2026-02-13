@@ -25,6 +25,9 @@ namespace Vectora {
 		window = std::unique_ptr<Window>(Window::Create(/*WindowProps("test",800, 800 ))*/));
 		window->SetVSync(false);
 		window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+
+		Renderer::Init();
+
 		m_ImguiLayer = new ImGuiLayer();
 		PushOverlay(m_ImguiLayer);
 	}

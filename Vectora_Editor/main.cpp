@@ -70,6 +70,7 @@ public:
 
 		m_Texture = Vectora::Texture2D::Create("assets/textures/Checkerboard.png");
 		m_ChernoTexture = Vectora::Texture2D::Create("assets/textures/ChernoLogo.png");
+
 		std::dynamic_pointer_cast<Vectora::OpenGLShader>(m_TextureShader)->Bind();
 		std::dynamic_pointer_cast<Vectora::OpenGLShader>(m_TextureShader)->setInt("u_Texture", 0);
     }
