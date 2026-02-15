@@ -9,6 +9,7 @@ namespace Vectora {
 	{
 	public:
 		OpenGLShader(std::string vertexShaderPath, std::string fragmentShaderPath);
+		OpenGLShader(const std::string& name, std::string vertexShaderPath, std::string fragmentShaderPath);
 		OpenGLShader(unsigned int vertexShaderID, unsigned int fragmentShaderID);
 		OpenGLShader(std::string vertexShaderPath, unsigned int fragmentShaderID);
 		OpenGLShader(unsigned int vertexShaderID, std::string fragmentShaderPath);
@@ -22,7 +23,9 @@ namespace Vectora {
 		virtual void Bind() const override final;
 		virtual void UnBind() const override final;
 		virtual void createShaders(ShaderCreationMode mode) override final;
-		virtual void useProgram() const override final;
+		virtual const std::string& GetName() const override final {
+			return m_Name;
+		}
 
 		std::string getVertexShaderSource() {
 			return vertexShaderSource;
@@ -74,6 +77,7 @@ namespace Vectora {
 		void loadVertexShader(std::string vPath);
 		void loadFragmentShader(std::string fPath);
 
+		std::string m_Name;
 		std::string vertexShaderSource;
 		std::string fragmentShaderSource;
 	};

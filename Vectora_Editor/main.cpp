@@ -44,16 +44,16 @@ public:
 	{
 		// Correct way to wrap a factory-created raw pointer into a shared_ptr
 		m_Shader = Vectora::Ref<Vectora::Shader>(Vectora::Shader::Create("shaders/vertex.glsl", "shaders/fragment.glsl"));
-		m_Shader->createShaders(Vectora::BOTH_FROM_FILE);
+		//m_Shader->createShaders(Vectora::BOTH_FROM_FILE);
 		// OR use reset (which is cleaner if the variable is already declared)
 		//m_BlueShader.reset(Vectora::Shader::Create("shaders/blueRectVt.glsl", "shaders/blueRectFg.glsl"));
 		
 		m_BlueShader = Vectora::Ref<Vectora::Shader>(Vectora::Shader::Create("shaders/blueRect.vertex.glsl", "shaders/blueRect.fragment.glsl"));
-		m_BlueShader->createShaders(Vectora::BOTH_FROM_FILE);
+		//m_BlueShader->createShaders(Vectora::BOTH_FROM_FILE);
 
-		m_TextureShader = Vectora::Ref<Vectora::Shader>(Vectora::Shader::Create("shaders/Texture.vertex.glsl", "shaders/Texture.fragment.glsl"));
-		m_TextureShader->createShaders(Vectora::BOTH_FROM_FILE);
-
+		auto textureShader = m_ShaderLibrary.Load("shaders/Texture.vertex.glsl", "shaders/Texture.fragment.glsl");
+		VE_CORE_INFO("Loaded shader: {0}", textureShader->GetName());
+		//textureShader->createShaders(Vectora::BOTH_FROM_FILE);
 		float vertices[] = {
 			-0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
 			 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
@@ -102,8 +102,8 @@ public:
 		m_Texture = Vectora::Texture2D::Create("assets/textures/Checkerboard.png");
 		m_ChernoTexture = Vectora::Texture2D::Create("assets/textures/ChernoLogo.png");
 
-		std::dynamic_pointer_cast<Vectora::OpenGLShader>(m_TextureShader)->Bind();
-		std::dynamic_pointer_cast<Vectora::OpenGLShader>(m_TextureShader)->setInt("u_Texture", 0);
+		std::dynamic_pointer_cast<Vectora::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<Vectora::OpenGLShader>(textureShader)->setInt("u_Texture", 0);
     }
 
     void OnImGuiRender() override
@@ -155,11 +155,12 @@ public:
 				Vectora::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
 			}
 		}
+		auto textureShader = m_ShaderLibrary.Get("Texture");
 		m_Texture->Bind();
-		Vectora::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Vectora::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		m_ChernoTexture->Bind();
-		Vectora::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Vectora::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 		// This one is triangle
 		// Vectora::Renderer::Submit(m_Shader, m_VertexArray);
 
@@ -181,13 +182,15 @@ public:
 		return true;
 	}
 private:
+	Vectora::OrthoGraphicCamera m_Camera;
+	Vectora::ShaderLibrary m_ShaderLibrary;
 	Vectora::OrthographicCameraController m_CameraController;
 
 	Vectora::Ref<Vectora::VertexArray> m_VertexArray;
 	Vectora::Ref<Vectora::Shader> m_Shader;
 					
 	Vectora::Ref<Vectora::VertexArray> m_SquareVA;
-	Vectora::Ref<Vectora::Shader> m_BlueShader, m_TextureShader;
+	Vectora::Ref<Vectora::Shader> m_BlueShader;
 
 
 	std::string filePath;
@@ -207,7 +210,8 @@ public:
     SandBox() {
 		PushLayer(new TestLayer() );
 
-        // SYNC CONTEXT: This prevents the Segfault
+        // SYNC CONTEXT: This prevents the Segfault.
+		// Only turns this on if you were building the core as a dll and linking to your app dynamically.
         /*auto* imguiLayer = (Vectora::ImGuiLayer*)Vectora::ImGuiLayer::GetImguiLayerInstance();
         ImGui::SetCurrentContext(imguiLayer->GetContext());*/
     }
