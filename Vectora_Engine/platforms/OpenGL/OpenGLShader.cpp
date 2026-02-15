@@ -34,6 +34,26 @@ namespace Vectora {
 	OpenGLShader::OpenGLShader(std::string vertexShaderPath, std::string fragmentShaderPath)
 	{
 		loadShaders(vertexShaderPath, fragmentShaderPath);
+		createShaders(ShaderCreationMode::BOTH_FROM_FILE);
+
+		// Extract name from filepath, this is done assuming that both vertex and fragment shaders 
+		// have the same name and are in the same directory. This is not a requirement but just a convention.
+		// this can crash if the vertex and fragment don't follow the same pattern
+		// shaders should be named "named.type.glsl" for opengl shaders. like "Texture.vertex.glsl" for example
+		auto lastSlash = vertexShaderPath.find_last_of("/\\");
+		lastSlash = (lastSlash == std::string::npos) ? 0 : lastSlash + 1;
+		auto firstDot = vertexShaderPath.find('.', lastSlash);
+		auto count = (firstDot == std::string::npos)
+			? vertexShaderPath.size() - lastSlash 
+			: firstDot - lastSlash;
+		m_Name = vertexShaderPath.substr(lastSlash, count);
+	}
+
+	OpenGLShader::OpenGLShader(const std::string& name, std::string vertexShaderPath, std::string fragmentShaderPath)
+		:m_Name(name)
+	{
+		loadShaders(vertexShaderPath, fragmentShaderPath);
+		createShaders(ShaderCreationMode::BOTH_FROM_FILE);
 	}
 
 	OpenGLShader::OpenGLShader(unsigned int vertexShaderID, unsigned int fragmentShaderID) {
@@ -68,7 +88,7 @@ namespace Vectora {
 
 	void OpenGLShader::loadVertexShader(std::string vPath) {
 		vertexShaderSource.clear();
-		std::ifstream vShaderFile(vPath, std::ios::in, std::ios::binary);
+		std::ifstream vShaderFile(vPath, std::ios::in | std::ios::binary);
 		std::string line;
 		if (vShaderFile) {
 			std::stringstream vShaderStream;
@@ -84,7 +104,7 @@ namespace Vectora {
 
 	void OpenGLShader::loadFragmentShader(std::string fPath) {
 		fragmentShaderSource.clear();
-		std::ifstream fShaderFile(fPath, std::ios::in, std::ios::binary);
+		std::ifstream fShaderFile(fPath, std::ios::in | std::ios::binary);
 		std::string line;
 
 		if (fShaderFile) {
@@ -119,10 +139,6 @@ namespace Vectora {
 			linkShaders();
 		}
 
-	};
-
-	void OpenGLShader::useProgram() const {
-		glUseProgram(RenderID);
 	};
 
 	void OpenGLShader::compileVertexShader() {

@@ -27,11 +27,27 @@ namespace Vectora {
 		virtual void UnBind() const = 0;
 
 		virtual void createShaders(ShaderCreationMode mode) = 0;
-		virtual void useProgram() const = 0;
+		virtual const std::string& GetName() const = 0;
 
-		static Shader* Create(std::string vertexShaderPath, std::string fragmentShaderPath);
-		static Shader* Create(unsigned int vertexShaderID, unsigned int fragmentShaderID);
-		static Shader* Create(std::string vertexShaderPath, unsigned int fragmentShaderID);
-		static Shader* Create(unsigned int vertexShaderID, std::string fragmentShaderPath);
+		static Ref<Shader> Create(std::string vertexShaderPath, std::string fragmentShaderPath);
+		static Ref<Shader> Create(const std::string& name, std::string vertexShaderPath, std::string fragmentShaderPath);
+		static Ref<Shader> Create(unsigned int vertexShaderID, unsigned int fragmentShaderID);
+		static Ref<Shader> Create(std::string vertexShaderPath, unsigned int fragmentShaderID);
+		static Ref<Shader> Create(unsigned int vertexShaderID, std::string fragmentShaderPath);
+	};
+
+	class ShaderLibrary
+	{
+	public:
+		void Add(const std::string& name, const Ref<Shader>& shader);
+		void Add(const Ref<Shader>& shader);
+		Ref<Shader> Load(const std::string& vertexPath, const std::string& fragmentPath);
+		Ref<Shader> Load(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath);
+
+		Ref<Shader> Get(const std::string& name);
+
+		bool Exists(const std::string& name) const;
+	private:
+		std::unordered_map<std::string, Ref<Shader>> m_Shaders;
 	};
 }
