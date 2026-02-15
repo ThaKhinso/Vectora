@@ -182,7 +182,6 @@ public:
 		return true;
 	}
 private:
-	Vectora::OrthoGraphicCamera m_Camera;
 	Vectora::ShaderLibrary m_ShaderLibrary;
 	Vectora::OrthographicCameraController m_CameraController;
 
