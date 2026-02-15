@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
+#include <array>
 #include <string>
 #include <stdint.h>
 #include <unordered_map>

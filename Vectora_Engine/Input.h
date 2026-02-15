@@ -17,7 +17,12 @@ namespace Vectora {
 
 	class VECTORA_API Input
 	{
+	protected:
+		Input() = default;
 	public:
+		Input(const Input&) = delete;
+		Input& operator=(const Input&) = delete;
+
 		inline static bool IsKeyPressed(VE_KEYCODE keycode) { return s_Instance->IsKeyPressedImpl(keycode); }
 
 		inline static bool IsMouseButtonPressed(VE_KEYCODE button) { return s_Instance->IsMouseButtonPressedImpl(button); }
