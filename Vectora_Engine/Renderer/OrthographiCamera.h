@@ -1,5 +1,5 @@
 #pragma once
-#include "Camera.h"
+#include "Core/Camera.h"
 
 namespace Vectora {
 	class VECTORA_API OrthoGraphicCamera : public Camera

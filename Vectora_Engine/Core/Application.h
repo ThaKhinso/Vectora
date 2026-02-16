@@ -8,7 +8,7 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
-#include "OrthographiCamera.h"
+#include "Renderer/OrthographiCamera.h"
 #include "Core/Timestep.h"
 #include <math.h>
 

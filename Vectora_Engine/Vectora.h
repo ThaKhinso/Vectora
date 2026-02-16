@@ -1,16 +1,16 @@
 #pragma once
-#include "Core.h"
-#include "Application.h"
+#include "Core/Core.h"
+#include "Core/Application.h"
 #include "Events/Event.h"
 #include "Events/KeyEvent.h"
-#include "Log.h"
-#include "LayerStack.h"
+#include "Core/Log.h"
+#include "Core/LayerStack.h"
 #include "imgui/ImGuiLayer.h"
-#include "KeyCodes.h"
-#include "Input.h"
+#include "Core/KeyCodes.h"
+#include "Core/Input.h"
 
-#include "OrthographiCamera.h"
-#include "OrthographicCameraController.h"
+#include "Renderer/OrthographiCamera.h"
+#include "Renderer/OrthographicCameraController.h"
 //------------Renderer-------------------
 #include "Renderer/Buffer.h"
 #include "Renderer/GraphicsContext.h"
@@ -24,5 +24,5 @@
 
 
 //-----------Entry Point------------//
-#include "EntryPoint.h"
+#include "Core/EntryPoint.h"
 //----------------------------------//

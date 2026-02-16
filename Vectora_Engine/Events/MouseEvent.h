@@ -1,6 +1,6 @@
 #pragma once
 #include "Events/Event.h"
-#include "KeyCodes.h"
+#include "Core/KeyCodes.h"
 
 namespace Vectora {
 	class VECTORA_API MouseMovedEvent : public Event

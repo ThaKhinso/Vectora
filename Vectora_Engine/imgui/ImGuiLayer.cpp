@@ -7,8 +7,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
-#include "Application.h"
-#include "KeyCodes.h"
+#include "Core/Application.h"
+#include "Core/KeyCodes.h"
 
 namespace Vectora {
 	ImGuiLayer* ImGuiLayer::s_ImGuiLayerInstance;

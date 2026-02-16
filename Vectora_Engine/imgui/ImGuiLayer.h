@@ -1,9 +1,10 @@
 #pragma once
-#include "Core.h"
-#include "Layer.h"
+#include "Core/Core.h"
+#include "Core/Layer.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
+
 // FORWARD DECLARATION: This tells the compiler "ImGuiContext is a struct."
 struct ImGuiContext;
 namespace Vectora {

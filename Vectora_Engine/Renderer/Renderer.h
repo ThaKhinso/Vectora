@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Core.h"
+#include "Core/Core.h"
 #include "RenderCommand.h"
 #include "OrthographiCamera.h"
 #include "Shader.h"

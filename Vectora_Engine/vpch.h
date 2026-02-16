@@ -20,7 +20,7 @@
 
 #include <type_traits>
 
-#include "Log.h"
+#include "Core/Log.h"
 
 #ifdef V_PLATFORM_WINDOWS
 #include <Windows.h>

@@ -1,7 +1,7 @@
 #include "vpch.h"
 #include "OrthographicCameraController.h"
-#include "Input.h"
-#include "KeyCodes.h"
+#include "Core/Input.h"
+#include "Core/KeyCodes.h"
 
 namespace Vectora {
 	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotation)

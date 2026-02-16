@@ -1,6 +1,6 @@
 #include "WindowsWindow.h"
 #include "vpch.h"
-#include "Log.h"
+#include "Core/Log.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/KeyEvent.h"
