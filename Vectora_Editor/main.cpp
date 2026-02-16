@@ -6,36 +6,13 @@
 #include <glm/vec4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
+#include "SandboxApp2D.h"
 
-//std::string OpenFileDialog()
-//{
-//	IFileOpenDialog* pFileOpen = nullptr;
-//	std::string result;
-//
-//	if (SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, NULL,
-//		CLSCTX_ALL, IID_IFileOpenDialog, (void**)&pFileOpen)))
-//	{
-//		if (SUCCEEDED(pFileOpen->Show(NULL)))
-//		{
-//			IShellItem* pItem;
-//			if (SUCCEEDED(pFileOpen->GetResult(&pItem)))
-//			{
-//				PWSTR pszFilePath = nullptr;
-//				if (SUCCEEDED(pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath)))
-//				{
-//					char path[MAX_PATH];
-//					wcstombs(path, pszFilePath, MAX_PATH);
-//					result = path;
-//					CoTaskMemFree(pszFilePath);
-//				}
-//				pItem->Release();
-//			}
-//		}
-//		pFileOpen->Release();
-//	}
-//
-//	return result;
-//}
+//-----------Entry Point------------//
+#include "Core/EntryPoint.h"
+//----------------------------------//
+
+
 
 class TestLayer : public Vectora::Layer {
 public:
@@ -44,23 +21,18 @@ public:
 	{
 		// Correct way to wrap a factory-created raw pointer into a shared_ptr
 		m_Shader = Vectora::Ref<Vectora::Shader>(Vectora::Shader::Create("shaders/vertex.glsl", "shaders/fragment.glsl"));
-		//m_Shader->createShaders(Vectora::BOTH_FROM_FILE);
-		// OR use reset (which is cleaner if the variable is already declared)
-		//m_BlueShader.reset(Vectora::Shader::Create("shaders/blueRectVt.glsl", "shaders/blueRectFg.glsl"));
-		
 		m_BlueShader = Vectora::Ref<Vectora::Shader>(Vectora::Shader::Create("shaders/blueRect.vertex.glsl", "shaders/blueRect.fragment.glsl"));
-		//m_BlueShader->createShaders(Vectora::BOTH_FROM_FILE);
 
 		auto textureShader = m_ShaderLibrary.Load("shaders/Texture.vertex.glsl", "shaders/Texture.fragment.glsl");
 		VE_CORE_INFO("Loaded shader: {0}", textureShader->GetName());
-		//textureShader->createShaders(Vectora::BOTH_FROM_FILE);
+	
 		float vertices[] = {
 			-0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
 			 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
 			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
 		};
 
-		m_VertexArray.reset(Vectora::VertexArray::Create());
+		m_VertexArray= Vectora::VertexArray::Create();
 
 		Vectora::BufferLayout layout = {
 			{ Vectora::ShaderDataType::Float3, "a_Position" },
@@ -78,7 +50,7 @@ public:
 		indexBuffer.reset(Vectora::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
-		m_SquareVA.reset(Vectora::VertexArray::Create());
+		m_SquareVA = Vectora::VertexArray::Create();
 		float squareVertices[] = {
 			-0.5f, -0.5f, 0.0f, 0.f, 0.f,
 			 0.5f, -0.5f, 0.0f, 1.f, 0.f,
@@ -110,12 +82,6 @@ public:
     {
 		ImGui::Begin("Settings");
 		ImGui::ColorEdit4("SquareColor", glm::value_ptr(m_SquareColor));
-		/*if (ImGui::Button("Choose File", { 100, 50 })) {
-			std::string path = OpenFileDialog();
-			if (!path.empty()) {
-				m_ChernoTexture = Vectora::Texture2D::Create(path);
-			}
-		};*/
 		ImGui::End();
 
 		ImGui::Begin("Renderer");
@@ -207,8 +173,8 @@ private:
 class SandBox : public Vectora::Application {
 public:
     SandBox() {
-		PushLayer(new TestLayer() );
-
+		//PushLayer(new TestLayer() );
+		PushLayer(new Sandbox2D());
         // SYNC CONTEXT: This prevents the Segfault.
 		// Only turns this on if you were building the core as a dll and linking to your app dynamically.
         /*auto* imguiLayer = (Vectora::ImGuiLayer*)Vectora::ImGuiLayer::GetImguiLayerInstance();

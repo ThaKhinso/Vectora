@@ -23,7 +23,7 @@ namespace Vectora {
 		struct SceneData {
 			glm::mat4 ViewProjectionMatrix;
 		};
-		static SceneData* sceneData;
+		static Scope<SceneData> sceneData;
 	};
 	class λ {
 

@@ -15,14 +15,10 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/GraphicsContext.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/Renderer2D.h"
 #include "Renderer/RenderCommand.h"
 #include "Renderer/Shader.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/Texture.h"
 #include "Core/Timestep.h"
 //----------------------------------------
-
-
-//-----------Entry Point------------//
-#include "Core/EntryPoint.h"
-//----------------------------------//

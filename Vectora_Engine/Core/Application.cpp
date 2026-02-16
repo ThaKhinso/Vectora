@@ -25,7 +25,8 @@ namespace Vectora {
 		window = std::unique_ptr<Window>(Window::Create(/*WindowProps("test",800, 800 ))*/));
 		window->SetVSync(false);
 		window->SetEventCallback(BIND_EVENT_FN(OnEvent));
-
+		//keep track this
+		//layerstack = LayerStack();
 		Renderer::Init();
 
 		m_ImguiLayer = new ImGuiLayer();

@@ -1,9 +1,10 @@
 #include "Renderer.h"
+#include "Renderer2D.h"
 #include "vpch.h"
 #include "platforms/OpenGL/OpenGLShader.h"
 
 namespace Vectora {
-	Renderer::SceneData* Renderer::sceneData = new Renderer::SceneData;
+	Scope<Renderer::SceneData> Renderer::sceneData = CreateScope<Renderer::SceneData>();
 	void Renderer::BeginScence(OrthoGraphicCamera& camera)
 	{
 		sceneData->ViewProjectionMatrix = camera.GetPV();
@@ -11,6 +12,7 @@ namespace Vectora {
 
 	void Renderer::Init() {
 		RenderCommand::Init();
+		Renderer2D::Init();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)

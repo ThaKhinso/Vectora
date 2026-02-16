@@ -54,12 +54,12 @@ namespace Vectora {
 		
 		// utility uniform functions
 		void setBool(const std::string& name, bool value) const;
-		void setInt(const std::string& name, int value) const;
-		void setFloat(const std::string& name, float value) const;
-		void setVec2(const std::string& name, float v1, float v2) const;
-		void setVec3(const std::string& name, const glm::vec3& vec4) const;
-		void setVec4(const std::string& name, const glm::vec4& vec4) const;
-		void setMat4(const std::string& name, const glm::mat4& trans) const;
+		virtual void setInt(const std::string& name, int value) const override;
+		virtual void setFloat(const std::string& name, float value) const override;
+		virtual void setVec2(const std::string& name, float v1, float v2) const override;
+		virtual void setVec3(const std::string& name, const glm::vec3& vec4) const override;
+		virtual void setVec4(const std::string& name, const glm::vec4& vec4) const override;
+		virtual void setMat4(const std::string& name, const glm::mat4& trans) const override;
 
 	private:
 		void getShaderCompilationError(unsigned int shaderID, GLenum ERROR_TYPE, ShaderType type);

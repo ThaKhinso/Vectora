@@ -3,11 +3,11 @@
 #include "platforms/OpenGL/OpenGLVertexArray.h"
 
 namespace Vectora {
-	VertexArray* VertexArray::Create()
+	Ref<VertexArray> VertexArray::Create()
 	{
 		switch (Renderer::GetAPI()) {
 		case RendererAPI::API::None: VE_CORE_ASSERT(false, "RendererApi::None is currently unsupported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return new OpenGLVertexArray();
+		case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLVertexArray>();
 		default:
 			VE_CORE_ASSERT(false, "Unknown RendererAPI!");
 			return nullptr;

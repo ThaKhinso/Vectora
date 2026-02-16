@@ -11,7 +11,7 @@
 
 namespace Vectora {
 
-	static bool s_GLFWInitialized = false;
+	static VE_UINT8 s_GLFWWindowCount = 0;
 	static void GLFWErrorCallback(int error, const char* desc) {
 		VE_CORE_ERROR("GLFW Error ({0}): ({1})", error, desc);
 	}
@@ -54,18 +54,19 @@ namespace Vectora {
 		this->m_Data.Height = prop.height;
 
 		VE_CORE_INFO("Creating window {0} ({1}, {2})", prop.title, prop.width, prop.height);
-		if (!s_GLFWInitialized)
+		if (s_GLFWWindowCount == 0)
 		{
 			// TODO: glfwTerminate on system shutdown
+			VE_CORE_INFO("Initializing GLFW");
 			int success = glfwInit();
 			VE_CORE_ASSERT(success, "Could not initialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
-			s_GLFWInitialized = true;
+			
 
 		}
 		m_Window = glfwCreateWindow(prop.width, prop.height, prop.title, nullptr, nullptr);
-		
-		m_Context = new OpenGLContext(m_Window);
+		++s_GLFWWindowCount;
+		m_Context = CreateScope<OpenGLContext>(m_Window);
 		m_Context->Init();
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -150,7 +151,14 @@ namespace Vectora {
 	}
 	void WindowsWindow::Shutdown()
 	{
-		glfwDestroyWindow(m_Window);
+		if (m_Window != nullptr) {
+			glfwDestroyWindow(m_Window);
+		}
+		if (--s_GLFWWindowCount == 0)
+		{
+			VE_CORE_INFO("Terminating GLFW");
+			glfwTerminate();
+		}
 	}
 }
 

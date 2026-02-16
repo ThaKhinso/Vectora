@@ -25,6 +25,12 @@ namespace Vectora {
 
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
+		virtual void setInt(const std::string& name, int value) const = 0;
+		virtual void setFloat(const std::string& name, float value) const = 0;
+		virtual void setVec2(const std::string& name, float v1, float v2) const = 0;
+		virtual void setVec3(const std::string& name, const glm::vec3& vec4) const = 0;
+		virtual void setVec4(const std::string& name, const glm::vec4& vec4) const = 0;
+		virtual void setMat4(const std::string& name, const glm::mat4& trans) const = 0;
 
 		virtual void createShaders(ShaderCreationMode mode) = 0;
 		virtual const std::string& GetName() const = 0;
