@@ -123,7 +123,7 @@ namespace Vectora {
 	};
 }
 
-#define VE_PROFILE 1
+#define VE_PROFILE 0
 #if VE_PROFILE
 #define VE_PROFILE_BEGIN_SESSION(name, filepath) ::Vectora::Instrumentor::Get().BeginSession(name, filepath)
 #define VE_PROFILE_END_SESSION() ::Vectora::Instrumentor::Get().EndSession()

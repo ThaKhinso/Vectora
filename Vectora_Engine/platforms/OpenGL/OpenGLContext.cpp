@@ -1,6 +1,6 @@
 #include "vpch.h"
-#include "OpenGLContext.h"
-
+#include "platforms/OpenGL/OpenGLContext.h"
+#include "Debug/Instrumentor.h"
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
@@ -12,6 +12,7 @@ namespace Vectora {
 	}
 	void OpenGLContext::Init()
 	{
+		VE_PROFILE_FUNCTION();
 		glfwMakeContextCurrent(m_WindowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		VE_CORE_ASSERT(status, "Failed to initialize Glad!");
@@ -23,7 +24,7 @@ namespace Vectora {
 	}
 	void OpenGLContext::SwapBuffers()
 	{
-		
+		VE_PROFILE_FUNCTION();
 		glfwSwapBuffers(m_WindowHandle);
 	}
 }

@@ -1,7 +1,9 @@
 #include "vpch.h"
-#include "OrthographicCameraController.h"
+#include "Renderer/OrthographicCameraController.h"
 #include "Core/Input.h"
 #include "Core/KeyCodes.h"
+#include "Debug/Instrumentor.h"
+
 #include <glm/glm.hpp>
 
 namespace Vectora {
@@ -13,6 +15,7 @@ namespace Vectora {
 	}
 	void OrthographicCameraController::OnUpdate(Timestep ts)
 	{
+		VE_PROFILE_FUNCTION();
 		if (Input::IsKeyPressed(VE_KEY_A))
 		{
 			m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
@@ -55,12 +58,14 @@ namespace Vectora {
 	}
 	void OrthographicCameraController::OnEvent(Event& e)
 	{
+		VE_PROFILE_FUNCTION();
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(VE_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 		dispatcher.Dispatch<WindowResizeEvent>(VE_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
 	}
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	{
+		VE_PROFILE_FUNCTION();
 		m_ZoomLevel -= e.GetYOffset() * 0.25f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
@@ -68,6 +73,7 @@ namespace Vectora {
 	}
 	bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e)
 	{
+		VE_PROFILE_FUNCTION();
 		VE_CORE_INFO("Aspect Ratio: {0} (W: {1}, H: {2})", m_AspectRatio, e.GetWidth(), e.GetHeight());
 		m_AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);

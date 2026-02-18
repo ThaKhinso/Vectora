@@ -1,7 +1,9 @@
-#include "RenderCommand.h"
-#include "Renderer2D.h"
-#include "VertexArray.h"
+#include "Renderer/RenderCommand.h"
+#include "Renderer/Renderer2D.h"
+#include "Renderer/VertexArray.h"
 #include "platforms/OpenGL/OpenGLShader.h"
+#include "Debug/Instrumentor.h"
+
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Vectora {
@@ -15,6 +17,7 @@ namespace Vectora {
 
 	void Renderer2D::Init()
 	{
+		VE_PROFILE_FUNCTION();
 		s_Data = new Renderer2DStorage;
 		s_Data->QuadVertexArray= VertexArray::Create();
 
@@ -48,16 +51,19 @@ namespace Vectora {
 	}
 	void Renderer2D::ShutDown()
 	{
+		VE_PROFILE_FUNCTION();
 		delete s_Data;
 	}
 	void Renderer2D::BeginScene(const OrthoGraphicCamera& camera)
 	{
+		VE_PROFILE_FUNCTION();
 		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->setMat4("u_ViewProjection", camera.GetPV());
 		
 	}
 	void Renderer2D::EndScene()
 	{
+		VE_PROFILE_FUNCTION();
 	}
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
 	{
@@ -65,6 +71,7 @@ namespace Vectora {
 	}
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
+		VE_PROFILE_FUNCTION();
 		s_Data->TextureShader->setVec4("u_Color", color);
 		s_Data->WhiteTexture->Bind();
 
@@ -79,6 +86,7 @@ namespace Vectora {
 	}
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
 	{
+		VE_PROFILE_FUNCTION();
 		s_Data->TextureShader->setVec4("u_Color", glm::vec4(1.0f));
 		texture->Bind();
 

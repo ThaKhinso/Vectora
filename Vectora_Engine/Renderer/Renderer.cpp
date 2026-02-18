@@ -1,7 +1,8 @@
-#include "Renderer.h"
-#include "Renderer2D.h"
 #include "vpch.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/Renderer2D.h"
 #include "platforms/OpenGL/OpenGLShader.h"
+#include "Debug/Instrumentor.h"
 
 namespace Vectora {
 	Scope<Renderer::SceneData> Renderer::sceneData = CreateScope<Renderer::SceneData>();
@@ -11,6 +12,7 @@ namespace Vectora {
 	}
 
 	void Renderer::Init() {
+		VE_PROFILE_FUNCTION();
 		RenderCommand::Init();
 		Renderer2D::Init();
 	}

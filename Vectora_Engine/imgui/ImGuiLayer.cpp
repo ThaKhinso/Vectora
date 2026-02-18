@@ -1,14 +1,15 @@
 #include "vpch.h"
 #include "ImGuiLayer.h"
+#include "Debug/Instrumentor.h"
+#include "Core/Application.h"
+#include "Core/KeyCodes.h"
 
-#include "imgui.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "backends/imgui_impl_glfw.h"
+#include <imgui.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
-#include "Core/Application.h"
-#include "Core/KeyCodes.h"
 
 namespace Vectora {
 	ImGuiLayer* ImGuiLayer::s_ImGuiLayerInstance;
@@ -60,6 +61,7 @@ namespace Vectora {
 
 	void ImGuiLayer::OnAttach()
 	{
+		VE_PROFILE_FUNCTION();
 		IMGUI_CHECKVERSION();
 		m_Context = ImGui::CreateContext();
 		ImGui::StyleColorsDark();
@@ -90,6 +92,7 @@ namespace Vectora {
 
 	void ImGuiLayer::OnDetach()
 	{
+		VE_PROFILE_FUNCTION();
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
@@ -97,6 +100,7 @@ namespace Vectora {
 
 	void ImGuiLayer::Begin()
 	{
+		VE_PROFILE_FUNCTION();
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -106,6 +110,7 @@ namespace Vectora {
 
 	void ImGuiLayer::End()
 	{
+		VE_PROFILE_FUNCTION();
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());

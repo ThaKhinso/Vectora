@@ -1,4 +1,4 @@
-#include "WindowsWindow.h"
+#include "platforms/Windows/WindowsWindow.h"
 #include "vpch.h"
 #include "Core/Log.h"
 #include "Events/Event.h"
@@ -6,6 +6,7 @@
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 #include "platforms/OpenGL/OpenGLContext.h"
+#include "Debug/Instrumentor.h"
 
 #include <glad/glad.h>
 
@@ -16,25 +17,30 @@ namespace Vectora {
 		VE_CORE_ERROR("GLFW Error ({0}): ({1})", error, desc);
 	}
 	Scope<Window> Window::Create(const WindowProps& prop) {
+		VE_PROFILE_FUNCTION();
 		return CreateScope<WindowsWindow>(prop);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
+		VE_PROFILE_FUNCTION();
 		Init(props);
 	}
 
 	WindowsWindow::~WindowsWindow()
 	{
+		VE_PROFILE_FUNCTION();
 		Shutdown();
 	}
 	void WindowsWindow::OnUpdate()
 	{
+		VE_PROFILE_FUNCTION();
 		glfwPollEvents();
 		m_Context->SwapBuffers();
 	}
 	void WindowsWindow::SetVSync(bool enabled)
 	{
+		VE_PROFILE_FUNCTION();
 		if (enabled)
 			glfwSwapInterval(1);
 		else
@@ -49,6 +55,7 @@ namespace Vectora {
 	}
 	void WindowsWindow::Init(const WindowProps& prop)
 	{
+		VE_PROFILE_FUNCTION();
 		this->m_Data.Title = prop.title;
 		this->m_Data.Width = prop.width;
 		this->m_Data.Height = prop.height;
@@ -56,6 +63,7 @@ namespace Vectora {
 		VE_CORE_INFO("Creating window {0} ({1}, {2})", prop.title, prop.width, prop.height);
 		if (s_GLFWWindowCount == 0)
 		{
+			VE_PROFILE_SCOPE("glfwInit");
 			// TODO: glfwTerminate on system shutdown
 			VE_CORE_INFO("Initializing GLFW");
 			int success = glfwInit();
@@ -64,8 +72,12 @@ namespace Vectora {
 			
 
 		}
-		m_Window = glfwCreateWindow(prop.width, prop.height, prop.title, nullptr, nullptr);
-		++s_GLFWWindowCount;
+
+		{
+			VE_PROFILE_SCOPE("glfwCreateWindow");
+			m_Window = glfwCreateWindow(prop.width, prop.height, prop.title, nullptr, nullptr);
+			++s_GLFWWindowCount;
+		}
 
 		m_Context = GraphicsContext::Create(m_Window);
 		m_Context->Init();
@@ -152,6 +164,7 @@ namespace Vectora {
 	}
 	void WindowsWindow::Shutdown()
 	{
+		VE_PROFILE_FUNCTION();
 		if (m_Window != nullptr) {
 			glfwDestroyWindow(m_Window);
 		}

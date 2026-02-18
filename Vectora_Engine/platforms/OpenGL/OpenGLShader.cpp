@@ -1,4 +1,5 @@
-#include "OpenGLShader.h"
+#include "platforms/OpenGL/OpenGLShader.h"
+#include "Debug/Instrumentor.h"
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Vectora {
@@ -33,6 +34,7 @@ namespace Vectora {
 
 	OpenGLShader::OpenGLShader(std::string vertexShaderPath, std::string fragmentShaderPath)
 	{
+		VE_PROFILE_FUNCTION();
 		loadShaders(vertexShaderPath, fragmentShaderPath);
 		createShaders(ShaderCreationMode::BOTH_FROM_FILE);
 
@@ -52,6 +54,7 @@ namespace Vectora {
 	OpenGLShader::OpenGLShader(const std::string& name, std::string vertexShaderPath, std::string fragmentShaderPath)
 		:m_Name(name)
 	{
+		VE_PROFILE_FUNCTION();
 		loadShaders(vertexShaderPath, fragmentShaderPath);
 		createShaders(ShaderCreationMode::BOTH_FROM_FILE);
 	}
@@ -87,6 +90,7 @@ namespace Vectora {
 	}
 
 	void OpenGLShader::loadVertexShader(std::string vPath) {
+		VE_PROFILE_FUNCTION();
 		vertexShaderSource.clear();
 		std::ifstream vShaderFile(vPath, std::ios::in | std::ios::binary);
 		std::string line;
@@ -103,6 +107,7 @@ namespace Vectora {
 	}
 
 	void OpenGLShader::loadFragmentShader(std::string fPath) {
+		VE_PROFILE_FUNCTION();
 		fragmentShaderSource.clear();
 		std::ifstream fShaderFile(fPath, std::ios::in | std::ios::binary);
 		std::string line;
@@ -121,6 +126,7 @@ namespace Vectora {
 
 	void OpenGLShader::createShaders(ShaderCreationMode mode) {
 
+		VE_PROFILE_FUNCTION();
 		if (mode == ShaderCreationMode::BOTH_FROM_FILE)
 		{
 			this->compileVertexShader();
@@ -142,6 +148,7 @@ namespace Vectora {
 	};
 
 	void OpenGLShader::compileVertexShader() {
+		VE_PROFILE_FUNCTION();
 		vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		const char* vertexSource = vertexShaderSource.c_str();
 		glShaderSource(vertexShader, 1, &vertexSource, NULL);
@@ -150,6 +157,7 @@ namespace Vectora {
 	}
 
 	void OpenGLShader::compileFragmentShader() {
+		VE_PROFILE_FUNCTION();
 		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 		const char* fragSource = fragmentShaderSource.c_str();
 		glShaderSource(fragmentShader, 1, &fragSource, NULL);
@@ -158,6 +166,7 @@ namespace Vectora {
 	}
 
 	void OpenGLShader::linkShaders() {
+		VE_PROFILE_FUNCTION();
 		RenderID = glCreateProgram();
 		glAttachShader(RenderID, vertexShader);
 		glAttachShader(RenderID, fragmentShader);
@@ -166,6 +175,7 @@ namespace Vectora {
 	}
 
 	void OpenGLShader::setFloat(const std::string& name, float value) const {
+		VE_PROFILE_FUNCTION();
 		glUniform1f(glGetUniformLocation(RenderID, name.c_str()), value);
 	}
 
@@ -173,25 +183,30 @@ namespace Vectora {
 		glUniform1i(glGetUniformLocation(RenderID, name.c_str()), value);
 	}
 	void OpenGLShader::setInt(const std::string& name, int value) const {
+		VE_PROFILE_FUNCTION();
 		glUniform1i(glGetUniformLocation(RenderID, name.c_str()), value);
 	}
 
 	void OpenGLShader::setVec2(const std::string& name, float v1, float v2) const {
+		VE_PROFILE_FUNCTION();
 		glUniform2f(glGetUniformLocation(RenderID, name.c_str()), v1, v2);
 	}
 
 	void OpenGLShader::setVec3(const std::string& name, const glm::vec3& vec4) const
 	{
+		VE_PROFILE_FUNCTION();
 		glUniform3f(glGetUniformLocation(RenderID, name.c_str()), vec4.x, vec4.y, vec4.z);
 	}
 
 	void OpenGLShader::setVec4(const std::string& name, const glm::vec4& vec4) const
 	{
+		VE_PROFILE_FUNCTION();
 		glUniform4f(glGetUniformLocation(RenderID, name.c_str()), vec4.x, vec4.y, vec4.z, vec4.w);
 	}
 
 
 	void OpenGLShader::setMat4(const std::string& name, const glm::mat4& trans) const {
+		VE_PROFILE_FUNCTION();
 		glUniformMatrix4fv(glGetUniformLocation(RenderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(trans));
 	}
 

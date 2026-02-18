@@ -1,13 +1,16 @@
-#include "OpenGLTexture2D.h"
 #include "vpch.h"
+#include "platforms/OpenGL/OpenGLTexture2D.h"
+#include "Debug/Instrumentor.h"
+
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <stb_image.h>
 #include <glad/glad.h>
 
 namespace Vectora {
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
 		: m_Width(width), m_Height(height)
 	{
+		VE_PROFILE_FUNCTION();
 		this->m_InternalFormat = GL_RGBA8;
 		this->m_DataFormat = GL_RGBA;
 
@@ -25,6 +28,7 @@ namespace Vectora {
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 		: m_Path(path)
 	{
+		VE_PROFILE_FUNCTION();
 		int width, height, channels;
 		stbi_set_flip_vertically_on_load(1); 
 		stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
@@ -69,10 +73,12 @@ namespace Vectora {
 
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
+		VE_PROFILE_FUNCTION();
 		glDeleteTextures(1, &m_RendererID);
 	}
 	void OpenGLTexture2D::SetData(void* data, uint32_t size)
 	{
+		VE_PROFILE_FUNCTION();
 		uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
 		VE_CORE_ASSERT(size == m_Width * m_Height * bpp, "Data must be entire texture!");
 		// 1. Bind the texture to the 2D target
@@ -84,6 +90,7 @@ namespace Vectora {
 	}
 	void OpenGLTexture2D::Bind(uint32_t slot) const
 	{
+		VE_PROFILE_FUNCTION();
 		//glBindTextureUnit(slot, m_RendererID);
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_RendererID);
