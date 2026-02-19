@@ -4,8 +4,6 @@
 
 namespace Vectora {
 
-	Scope<Input> Input::s_Instance = CreateScope<WindowsInput>();
-
 	bool WindowsInput::IsKeyPressedImpl(VE_KEYCODE keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());

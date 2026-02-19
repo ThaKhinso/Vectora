@@ -12,6 +12,8 @@
 #include "Core/Timestep.h"
 #include <math.h>
 
+int main(int argc, char** argv);
+
 namespace Vectora {
 	class VECTORA_API Application
 	{
@@ -19,7 +21,6 @@ namespace Vectora {
 		Application();
 		virtual ~Application();
 
-		void Run();
 		void OnEvent(Event& e);
 
 		void PushLayer(Layer* layer);
@@ -35,14 +36,18 @@ namespace Vectora {
 			this->m_Running = run;
 		}
 	private:
+		void Run();
 		Scope<Window> window;
 		ImGuiLayer* m_ImguiLayer;
 		LayerStack layerstack;
 		bool m_Running = true;
 		bool m_Minimized = false;
-		static Application* s_Instance;
 		
 		float m_LastFrameTime = 0.f;
+
+	private:
+		static Application* s_Instance;
+		friend int ::main(int argc, char** argv);
 	};
 	Application* CreateApplication();
 }

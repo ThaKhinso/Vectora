@@ -16,10 +16,6 @@ namespace Vectora {
 	static void GLFWErrorCallback(int error, const char* desc) {
 		VE_CORE_ERROR("GLFW Error ({0}): ({1})", error, desc);
 	}
-	Scope<Window> Window::Create(const WindowProps& prop) {
-		VE_PROFILE_FUNCTION();
-		return CreateScope<WindowsWindow>(prop);
-	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
