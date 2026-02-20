@@ -210,4 +210,11 @@ namespace Vectora {
 		glUniformMatrix4fv(glGetUniformLocation(RenderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(trans));
 	}
 
+	void OpenGLShader::SetIntArray(const std::string& name, int* values, uint32_t count) const
+	{
+		VE_PROFILE_FUNCTION();
+		GLint location = glGetUniformLocation(RenderID, name.c_str());
+		glUniform1iv(location, count, values);
+	}
+
 }

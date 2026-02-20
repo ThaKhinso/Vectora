@@ -60,6 +60,7 @@ namespace Vectora {
 		virtual void setVec3(const std::string& name, const glm::vec3& vec4) const override;
 		virtual void setVec4(const std::string& name, const glm::vec4& vec4) const override;
 		virtual void setMat4(const std::string& name, const glm::mat4& trans) const override;
+		virtual void SetIntArray(const std::string& name, int* values, uint32_t count) const override final;
 
 	private:
 		void getShaderCompilationError(unsigned int shaderID, GLenum ERROR_TYPE, ShaderType type);

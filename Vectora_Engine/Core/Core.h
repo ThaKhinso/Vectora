@@ -48,6 +48,11 @@ namespace Vectora {
 #define VE_UINT16 uint16_t
 #define VE_UINT32 uint32_t
 #define VE_UINT64 uint64_t
+#define VE_INT int64_t
+#define VE_INT8 int8_t
+#define VE_INT16 int16_t
+#define VE_INT32 int32_t
+#define VE_INT64 int64_t
 #define VE_FLOAT32 float
 #define VE_FLOAT64 double
 #define VE_CHAR char
