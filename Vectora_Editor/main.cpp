@@ -179,6 +179,7 @@ public:
 		//PushLayer(new Sandbox2D());
 		PushLayer(new BackGround());
 		PushLayer(new TileLayer());
+		PushLayer(new FlappyBird());
         // SYNC CONTEXT: This prevents the Segfault.
 		// Only turns this on if you were building the core as a dll and linking to your app dynamically.
         /*auto* imguiLayer = (Vectora::ImGuiLayer*)Vectora::ImGuiLayer::GetImguiLayerInstance();

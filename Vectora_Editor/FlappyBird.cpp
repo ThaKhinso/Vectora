@@ -5,7 +5,7 @@
 FlappyBird::FlappyBird()
 :Layer("Flappybird"), m_CameraController(600.f / 600.f)
 {
-	
+	m_BirdTexture = Vectora::Texture2D::Create("assets/flappy/Bird.png");
 }
 
 void FlappyBird::OnAttach()
@@ -18,6 +18,11 @@ void FlappyBird::OnDetach()
 
 void FlappyBird::OnUpdate(Vectora::Timestep ts)
 {
+	Vectora::Renderer2D::BeginScene(m_CameraController.GetCamera());
+
+	Vectora::Renderer2D::DrawQuad({ 0.f, 0.f, 1.f }, { 0.2f, 0.2f }, m_BirdTexture);
+
+	Vectora::Renderer2D::EndScene();
 }
 
 void FlappyBird::OnImGuiRender()
@@ -68,8 +73,8 @@ void BackGround::OnUpdate(Vectora::Timestep ts)
 	Vectora::Renderer2D::DrawQuad({ pos.x, bgY }, { 2.0f, bgHeight }, m_BackgroundTexture);
 	Vectora::Renderer2D::DrawQuad({ pos.x + 2.f, bgY }, { 2.0f, bgHeight }, m_BackgroundTexture);
 	Vectora::Renderer2D::DrawQuad({ -1.f, groundY, 0.1f }, { 1.f, groundHeight }, m_GroundTexture);
-	Vectora::Renderer2D::DrawQuad({ 0.f, groundY, 0.1f }, { 1.f, groundHeight }, m_GroundTexture);
-	Vectora::Renderer2D::DrawQuad({ 1.f, groundY, 0.1f }, { 1.f, groundHeight }, m_GroundTexture);
+	Vectora::Renderer2D::DrawQuad({ 0.f, groundY, 0.2f }, { 1.f, groundHeight }, m_GroundTexture);
+	Vectora::Renderer2D::DrawQuad({ 1.f, groundY, 0.2f }, { 1.f, groundHeight }, m_GroundTexture);
 	//Vectora::Renderer2D::DrawQuad(test, siz, m_GroundTexture);
 	pos.x -= backgroundSpeed * ts;
 	if (pos.x <= -2.f)
@@ -140,7 +145,7 @@ void TileLayer::OnUpdate(Vectora::Timestep ts)
 
 	// 2. Standard mersenne_twister_engine seeded with rd()
 	static std::mt19937 engine(rd());
-
+	float groundTopY = -0.7f;
 	// 3. Define the distribution for floats in a specific range [min, max)
 	// Example: range [0.0f, 10.0f)
 	static std::uniform_real_distribution<float> dist(-0.5f, 0.5f);
@@ -159,18 +164,25 @@ void TileLayer::OnUpdate(Vectora::Timestep ts)
 	for (auto& pipe : m_Pipes) {
 		if (pipe.Position.x < -2.5f) { // Off-screen left
 			pipe.Position.x += m_Pipes.size() * m_PipeSpacing;
-			pipe.GapY = random_number; // Change the height randomly
+			pipe.GapY = dist(engine); // Change the height randomly
 		}
 
 		Vectora::Renderer2D::DrawQuad(
-			{ pipe.Position.x, pipe.GapY + 1.2f, 1.f },
+			{ pipe.Position.x, pipe.GapY + 1.2f, 0.1f },
 			{ 0.3f, 2.0f },
 			m_TileTexture
 		);
 
+		// We calculate the top edge of the bottom pipe based on your gap
+		float bottomPipeTopEdge = pipe.GapY - 1.2f + 1.0f; // Center - HalfHeight + Offset logic
+
+		// To make it "sit" on the ground, we calculate a new height and center:
+		float availableHeight = bottomPipeTopEdge - groundTopY;
+		float newCenterY = groundTopY + (availableHeight / 2.0f);
+
 		// Draw Bottom Pipe
 		Vectora::Renderer2D::DrawQuad(
-			{ pipe.Position.x, pipe.GapY - 1.2f, 1.f },
+			{ pipe.Position.x, pipe.GapY - 1.2f, 0.1f },
 			{ 0.3f, 2.0f },
 			m_TileTexture
 		);
