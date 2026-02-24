@@ -77,13 +77,13 @@ public:
 
 private:
 	glm::vec2 pos = { 0.f, 0.f };
-	float tileSpeed = 0.4f;
-	Vectora::OrthographicCameraController m_CameraController;
+	float tileSpeed = 150.f;
+	Vectora::OrthoGraphicCamera m_Camera;
 	Vectora::Ref<Vectora::Texture2D> m_TileTexture;
 
-	std::vector<Pipe> m_Pipes;
+	
 	float m_PipeSpawnX = 2.0f; // Start spawning pipes just off-screen
-	const float m_PipeSpacing = 1.5f; // Horizontal distance between pipes
+	float m_PipeSpacing = 300.5f; // Horizontal distance between pipes
 };
 
 class FlappyBird : public Vectora::Layer
@@ -99,9 +99,17 @@ public:
 	virtual void OnImGuiRender() override;
 	void OnEvent(Vectora::Event& e) override;
 private:
-	Vectora::OrthographicCameraController m_CameraController;
+	Vectora::OrthoGraphicCamera m_Camera;
 	
 	Vectora::Ref<Vectora::Texture2D> m_BirdTexture;
+	float m_BirdRotation = 0.f;
+	float m_BirdY = 300.0f;          // Position (Middle of screen)
+	float m_BirdVelocityY = 0.0f;    // Current speed (up or down)
+
+	// Constants (You'll need to tweak these to "feel" right)
+	const float m_Gravity = 1000.0f;   // Acceleration pulling you down
+	const float m_FlapForce = -250.0f; // Instant burst of speed UP
+	const float m_TerminalVelocity = 400.0f; // Max falling speed (so it doesn't get crazy)
 
 	struct ProfileResult
 	{
