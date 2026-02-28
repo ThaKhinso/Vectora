@@ -15,6 +15,11 @@ void Sandbox2D::OnAttach()
 {
 	VE_PROFILE_FUNCTION();
 	m_CheckerboardTexture = Vectora::Texture2D::Create("assets/textures/Checkerboard.png");
+
+	Vectora::FramebufferSpecification fbSpecs;
+	fbSpecs.Width = 1280;
+	fbSpecs.Height = 720;
+	m_FrameBuffer = Vectora::Framebuffer::Create(fbSpecs);
 }
 
 void test() <%
@@ -40,6 +45,7 @@ void Sandbox2D::OnUpdate(Vectora::Timestep ts)
 	Vectora::Renderer2D::ResetStats();
 	{
 		VE_PROFILE_SCOPE("Renderer Prep");
+		m_FrameBuffer->Bind();
 		Vectora::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Vectora::RenderCommand::Clear();
 	}
@@ -68,6 +74,7 @@ void Sandbox2D::OnUpdate(Vectora::Timestep ts)
 			}
 		}
 		Vectora::Renderer2D::EndScene();
+		m_FrameBuffer->Unbind();
 	}
 }
 
@@ -76,7 +83,7 @@ void Sandbox2D::OnImGuiRender()
 	VE_PROFILE_FUNCTION();
 
 	// Note: Switch this to true to enable dockspace
-	static bool dockingEnabled = false;
+	static bool dockingEnabled = true;
 	if (dockingEnabled)
 	{
 		static bool dockspaceOpen = true;
@@ -146,8 +153,8 @@ void Sandbox2D::OnImGuiRender()
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 		ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
-		uint32_t textureID = m_CheckerboardTexture->GetRendererID();
-		ImGui::Image((void*)textureID, ImVec2{ 256.0f, 256.0f });
+		uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
+		ImGui::Image((void*)textureID, ImVec2{ 1280.0f, 720.0f });
 		ImGui::End();
 
 		ImGui::Begin("Renderer");
@@ -173,8 +180,8 @@ void Sandbox2D::OnImGuiRender()
 
 		ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
 
-		uint32_t textureID = m_CheckerboardTexture->GetRendererID();
-		ImGui::Image((void*)textureID, ImVec2{ 256.0f, 256.0f });
+		uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
+		ImGui::Image((void*)textureID, ImVec2{ 1280.0f, 720.0f });
 		ImGui::End();
 	}
 }

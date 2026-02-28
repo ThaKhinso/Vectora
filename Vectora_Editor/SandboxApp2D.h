@@ -21,6 +21,8 @@ private:
 	Vectora::Ref<Vectora::VertexArray> m_SquareVA;
 	Vectora::Ref<Vectora::Shader> m_FlatColorShader;
 	Vectora::Ref<Vectora::Texture2D> m_CheckerboardTexture;
+	Vectora::Ref<Vectora::Framebuffer> m_FrameBuffer;
+
 	glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 
 	struct ProfileResult

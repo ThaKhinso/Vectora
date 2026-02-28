@@ -8,10 +8,12 @@
 #include "imgui/ImGuiLayer.h"
 #include "Core/KeyCodes.h"
 #include "Core/Input.h"
+#include "Core/Timestep.h"
+#include "Debug/Instrumentor.h"
 
+//------------Renderer-------------------
 #include "Renderer/OrthographiCamera.h"
 #include "Renderer/OrthographicCameraController.h"
-//------------Renderer-------------------
 #include "Renderer/Buffer.h"
 #include "Renderer/GraphicsContext.h"
 #include "Renderer/Renderer.h"
@@ -20,6 +22,5 @@
 #include "Renderer/Shader.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/Texture.h"
-#include "Core/Timestep.h"
-#include "Debug/Instrumentor.h"
+#include "Renderer/FrameBuffer.h"
 //----------------------------------------
