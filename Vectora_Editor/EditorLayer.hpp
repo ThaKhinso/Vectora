@@ -34,5 +34,8 @@ namespace Vectora
 		};
 		float fps;
 		std::vector<ProfileResult> m_ProfileResults;
+		glm::vec2 m_ViewportSize = { 0.f, 0.f };
+
+		bool m_ViewportFocused = false, m_ViewportHovered = false;
 	};
 }
