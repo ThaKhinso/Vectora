@@ -66,6 +66,8 @@ namespace Vectora{
 
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraControler>();
 		m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraControler>();
+
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 
 	void EditorLayer::OnDetach()
@@ -223,6 +225,8 @@ namespace Vectora{
 				}
 				ImGui::EndMenuBar();
 			}
+
+			m_SceneHierarchyPanel.OnImGuiRender();
 
 			ImGui::Begin("Settings");
 			auto stats = Renderer2D::GetStats();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vectora.h"
+#include "Panels/SceneHirearchyPanel.h"
 
 namespace Vectora
 {
@@ -45,5 +46,6 @@ namespace Vectora
 		bool m_PrimaryCamera = true;
 
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
+		SceneHirearchyPanel m_SceneHierarchyPanel;
 	};
 }
