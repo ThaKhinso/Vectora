@@ -21,7 +21,7 @@ namespace Vectora {
 		}
 
 		EVENT_CLASS_TYPE_FINAL(MouseMoved)
-		EVENT_CLASS_CATEGORY_FINAL(EventCategoryMouse | EventCategoryInput)
+		EVENT_CLASS_CATEGORY_FINAL(EventCategoryMouse | EventCategoryInput | EventCategoryMouseButton)
 	private:
 		float m_MouseX, m_MouseY;
 	};

@@ -4,6 +4,7 @@
 #include "Events/Event.h"
 #include "Events/KeyEvent.h"
 #include "Core/Log.h"
+#include "Core/Assert.h"
 #include "Core/LayerStack.h"
 #include "imgui/ImGuiLayer.h"
 #include "Core/KeyCodes.h"
