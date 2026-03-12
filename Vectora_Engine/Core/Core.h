@@ -1,6 +1,11 @@
 #pragma once
 #include <stdint.h>
 #include <memory>
+#include "Core/PlatformDetection.h"
+
+#ifdef _DEBUG
+#define VE_DEBUG
+#endif
 
 #ifdef VE_PLATFORM_WINDOWS
     #if defined(VE_BUILD_STATIC)
@@ -13,17 +18,28 @@
 #else
     #define VECTORA_API
 #endif
+
+#ifdef VE_DEBUG
+#if defined(VE_PLATFORM_WINDOWS)
+#define VE_DEBUGBREAK() __debugbreak()
+#elif defined(VE_PLATFORM_LINUX)
+#include <signal.h>
+#define VE_DEBUGBREAK() raise(SIGTRAP)
+#else
+#error "Platform doesn't support debugbreak yet!"
+#endif
+#define VE_ENABLE_ASSERTS_T // don't forget to change this
+#else
+#define VE_DEBUGBREAK()
+#endif
+
 #define BIT(x) (1 << x)
 
 #define VE_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
-#ifdef VE_ENABLE_ASSERTS
-#define VE_ASSERT(x, ...) { if(!(x)) { VE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-#define VE_CORE_ASSERT(x, ...) { if(!(x)) { VE_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-#else
-#define VE_ASSERT(x, ...)
-#define VE_CORE_ASSERT(x, ...)
-#endif
+
+#define VE_EXPAND_MACRO(x) x
+#define VE_STRINGIFY_MACRO(x) #x
 
 namespace Vectora {
     template<typename T>
@@ -42,6 +58,9 @@ namespace Vectora {
         return std::make_shared<T>(std::forward<Args>(args)...);
     }
 }
+
+#include "Core/Log.h"
+#include "Core/Assert.h"
 
 #define VE_UINT uint64_t
 #define VE_UINT8 uint8_t
