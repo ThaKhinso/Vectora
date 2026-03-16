@@ -128,7 +128,8 @@ namespace Vectora {
 	template<typename T>
 	void Scene::OnComponentAdded(Entity entity, T& component)
 	{
-		static_assert(false);
+		/*static_assert(false);*/
+		static_assert(sizeof(T) == 0, "This component type does not have a specialized OnComponentAdded implementation!");
 	}
 
 	template<>
