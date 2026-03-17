@@ -35,6 +35,9 @@ namespace Vectora {
 
 		m_ImguiLayer = new ImGuiLayer();
 		PushOverlay(m_ImguiLayer);
+
+		m_DiscordManager = CreateScope<DiscordManager>();
+		m_DiscordManager->Init();
 	}
 
 	Application::~Application()
@@ -51,6 +54,8 @@ namespace Vectora {
 			float time = (float)glfwGetTime();
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
+			m_DiscordManager->Update();
+			m_DiscordManager->UpdatePresence("Kozen is a nigger", "fuck u");
 
 			if(!m_Minimized)
 			{

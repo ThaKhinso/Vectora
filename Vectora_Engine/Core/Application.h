@@ -1,7 +1,8 @@
 #pragma once
-#include "Core.h"
-#include "Window.h"
-#include "LayerStack.h"
+#include "Core/Core.h"
+#include "Core/Window.h"
+#include "Core/LayerStack.h"
+#include "Core/Timestep.h"
 #include "imgui/ImGuiLayer.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
@@ -9,7 +10,8 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/OrthographiCamera.h"
-#include "Core/Timestep.h"
+#include "Core/DiscordManager.h"
+
 #include <math.h>
 
 int main(int argc, char** argv);
@@ -48,6 +50,8 @@ namespace Vectora {
 		float m_LastFrameTime = 0.f;
 
 	private:
+		Scope<DiscordManager> m_DiscordManager = nullptr;
+		
 		static Application* s_Instance;
 		friend int ::main(int argc, char** argv);
 	};
