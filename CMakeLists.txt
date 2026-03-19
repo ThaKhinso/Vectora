@@ -46,18 +46,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BASE_OUTPUT_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${BASE_OUTPUT_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${BASE_OUTPUT_DIR})
 
-
-
-#foreach(OUTPUTCONFIG Debug Release RelWithDebInfo MinSizeRel)
-#    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG}
-#        ${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM})
-#    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG}
-#        ${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM})
-#    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG}
-#        ${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM})
-#endforeach()
-
-
 # Note that, dynamic fetching required libraries like this is not a good idea for production code,
 # and you should always consider vendoring the dependencies in your repository. This is just for learning purposes so it is fine.
 # having network issues can make this fail and vomit weird errors you cannot debug.
@@ -89,12 +77,18 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 
+FetchContent_Declare(
+    yaml-cpp
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+    GIT_TAG yaml-cpp-0.9.0 # Can be a tag (yaml-cpp-x.x.x), a commit hash, or a branch name (master)
+    GIT_SHALLOW TRUE
+)
 
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 
-FetchContent_MakeAvailable(glfw glm spdlog imgui)
+FetchContent_MakeAvailable(glfw glm spdlog imgui yaml-cpp)
 get_property(glfwTargets
     DIRECTORY ${glfw_BINARY_DIR}
     PROPERTY BUILDSYSTEM_TARGETS
@@ -109,15 +103,6 @@ foreach(target
         )
     endif()
 endforeach()
-
-#foreach(target ${glfwTargets})
-#    set_target_properties(${target}
-#        PROPERTIES FOLDER "Dependencies"
-#    )
-#endforeach()
-#foreach(target ${allTargets})
-#    set_target_properties(${target} PROPERTIES FOLDER "Dependencies/GLFW")
-#endforeach()
 
 add_library(imgui_static STATIC 
     ${imgui_SOURCE_DIR}/imgui.cpp
@@ -148,6 +133,10 @@ set_target_properties(glm PROPERTIES FOLDER "Dependencies")
 set_target_properties(glfw PROPERTIES FOLDER "Dependencies")
 set_target_properties(spdlog PROPERTIES FOLDER "Dependencies")
 set_target_properties(imgui_static PROPERTIES FOLDER "Dependencies")
+set_target_properties(yaml-cpp PROPERTIES FOLDER "Dependencies")
+set_target_properties(yaml-cpp-parse PROPERTIES FOLDER "Dependencies")
+set_target_properties(yaml-cpp-read PROPERTIES FOLDER "Dependencies")
+set_target_properties(yaml-cpp-sandbox PROPERTIES FOLDER "Dependencies")
 
 
 file(GLOB_RECURSE ENGINE CONFIGURE_DEPENDS
@@ -173,7 +162,7 @@ file(GLOB_RECURSE SANDBOX CONFIGURE_DEPENDS
 )
 
 add_library(${VE_ENGINE_TARGET} STATIC ${ENGINE})
-add_dependencies(${VE_ENGINE_TARGET} imgui_static)
+add_dependencies(${VE_ENGINE_TARGET} imgui_static yaml-cpp)
 # Include your own headers
 target_include_directories(${VE_ENGINE_TARGET} PUBLIC
     ${DISCORD_SDK_INCLUDE_DIR}
@@ -198,12 +187,17 @@ set_target_properties(${VE_ENGINE_TARGET} PROPERTIES
 # Link libraries
 target_link_libraries(${VE_ENGINE_TARGET} PUBLIC
     ${DISCORD_LIB_PATH}
+    yaml-cpp
     imgui_static
     glfw
     glm::glm
     spdlog::spdlog
     OpenGL::GL
 ) # // BREAKPOINT
+
+target_include_directories(${VE_ENGINE_TARGET} SYSTEM PRIVATE
+    $<TARGET_PROPERTY:yaml-cpp,INTERFACE_INCLUDE_DIRECTORIES>
+)
 
 target_precompile_headers(${VE_ENGINE_TARGET} PRIVATE 
     "$<$<COMPILE_LANGUAGE:CXX>:vpch.h>"
@@ -240,17 +234,7 @@ set_target_properties(${VE_SANDBOX_TARGET} PROPERTIES
 target_compile_definitions(${VE_SANDBOX_TARGET} PRIVATE VE_BUILD_STATIC VE_PLATFORM_WINDOWS)
 target_link_libraries(${VE_SANDBOX_TARGET} PUBLIC ${VE_ENGINE_TARGET} ${DISCORD_LIB_PATH})
 
-#foreach(OUTPUTCONFIG Debug Release RelWithDebInfo MinSizeRel)
-#f   string(TOUPPER ${OUTPUTCONFIG} CONFIG_UPPER)
-#f   set_target_properties(${VE_EDITOR_TARGET} PROPERTIES
-#f       RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER} "${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM}"
-#f   )
-#f   set_target_properties(${VE_ENGINE_TARGET} PROPERTIES
-#f       RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER} "${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM}"
-#f       LIBRARY_OUTPUT_DIRECTORY_${CONFIG_UPPER} "${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM}"
-#f       ARCHIVE_OUTPUT_DIRECTORY_${CONFIG_UPPER} "${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM}"
-#f   )
-#fndforeach()
+
 
 # Forcing the cmake build output
 #${CMAKE_BINARY_DIR}/bin/$<CONFIG>-${ENGINE_PLATFORM}

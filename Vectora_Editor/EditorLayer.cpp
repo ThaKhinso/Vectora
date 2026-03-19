@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Scene/SceneSerializer.h"
 
 namespace Vectora {
 
@@ -25,6 +26,7 @@ namespace Vectora {
 
 		m_ActiveScene = CreateRef<Scene>();
 
+#if asdfasfd
 		// Entity
 		auto square = m_ActiveScene->CreateEntity("Green Square");
 		square.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
@@ -73,8 +75,12 @@ namespace Vectora {
 
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-
+#endif
+		/*SceneSerializer serializer(m_ActiveScene);
+		serializer.Deserialize("assets/scenes/Example.vectora");*/
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		/*SceneSerializer serializer(m_ActiveScene);
+		serializer.Serialize("assets/scenes/Example.vectora");*/
 	}
 
 	void EditorLayer::OnDetach()
@@ -174,6 +180,17 @@ namespace Vectora {
 				// Disabling fullscreen would allow the window to be moved to the front of other windows, 
 				// which we can't undo at the moment without finer window depth/z control.
 				//ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
+				if (ImGui::MenuItem("Serialize"))
+				{
+					SceneSerializer serializer(m_ActiveScene);
+					serializer.Serialize("assets/scenes/Example.Vectora");
+				}
+
+				if (ImGui::MenuItem("Deserialize"))
+				{
+					SceneSerializer serializer(m_ActiveScene);
+					serializer.Deserialize("assets/scenes/Example.Vectora");
+				}
 
 				if (ImGui::MenuItem("Exit")) Application::Get().SetRunning(false);
 				ImGui::EndMenu();
