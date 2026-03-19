@@ -8,9 +8,26 @@ set(VE_EDITOR_TARGET Vectora_Editor)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(DISCORD_SDK_ROOT "${CMAKE_SOURCE_DIR}/Dependencies/Discord")
+set(DISCORD_SDK_LIB_DIR "${DISCORD_SDK_ROOT}/lib/debug")
+set(DISCORD_SDK_BIN_DIR "${DISCORD_SDK_ROOT}/bin/debug")
+set(DISCORD_SDK_INCLUDE_DIR "${DISCORD_SDK_ROOT}/include")
+
+# Platform-specific Social SDK library paths tho currently windows is only supported for building out of the box
+if(WIN32)
+    set(DISCORD_LIB_PATH "${DISCORD_SDK_LIB_DIR}/discord_partner_sdk.lib")
+    set(DISCORD_SHARED_LIB "${DISCORD_SDK_BIN_DIR}/discord_partner_sdk.dll")
+elseif(APPLE)
+    set(DISCORD_LIB_PATH "${DISCORD_SDK_LIB_DIR}/libdiscord_partner_sdk.dylib")
+    set(DISCORD_SHARED_LIB "${DISCORD_SDK_LIB_DIR}/libdiscord_partner_sdk.dylib")
+else() # Linux
+    set(DISCORD_LIB_PATH "${DISCORD_SDK_LIB_DIR}/libdiscord_partner_sdk.so")
+    set(DISCORD_SHARED_LIB "${DISCORD_SDK_LIB_DIR}/libdiscord_partner_sdk.so")
+endif()
+
 # I might need this later
 # This ensures /MD for Release and /MDd for Debug
-# set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL") 
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>") 
 if (WIN32)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(ENGINE_PLATFORM "Win64")
@@ -28,18 +45,6 @@ set(BASE_OUTPUT_DIR "${CMAKE_BINARY_DIR}/bin/$<CONFIG>-${ENGINE_PLATFORM}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BASE_OUTPUT_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${BASE_OUTPUT_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${BASE_OUTPUT_DIR})
-
-
-
-#foreach(OUTPUTCONFIG Debug Release RelWithDebInfo MinSizeRel)
-#    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG}
-#        ${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM})
-#    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG}
-#        ${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM})
-#    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG}
-#        ${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM})
-#endforeach()
-
 
 # Note that, dynamic fetching required libraries like this is not a good idea for production code,
 # and you should always consider vendoring the dependencies in your repository. This is just for learning purposes so it is fine.
@@ -72,12 +77,18 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 
+FetchContent_Declare(
+    yaml-cpp
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+    GIT_TAG yaml-cpp-0.9.0 # Can be a tag (yaml-cpp-x.x.x), a commit hash, or a branch name (master)
+    GIT_SHALLOW TRUE
+)
 
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 
-FetchContent_MakeAvailable(glfw glm spdlog imgui)
+FetchContent_MakeAvailable(glfw glm spdlog imgui yaml-cpp)
 get_property(glfwTargets
     DIRECTORY ${glfw_BINARY_DIR}
     PROPERTY BUILDSYSTEM_TARGETS
@@ -92,15 +103,6 @@ foreach(target
         )
     endif()
 endforeach()
-
-#foreach(target ${glfwTargets})
-#    set_target_properties(${target}
-#        PROPERTIES FOLDER "Dependencies"
-#    )
-#endforeach()
-#foreach(target ${allTargets})
-#    set_target_properties(${target} PROPERTIES FOLDER "Dependencies/GLFW")
-#endforeach()
 
 add_library(imgui_static STATIC 
     ${imgui_SOURCE_DIR}/imgui.cpp
@@ -131,6 +133,10 @@ set_target_properties(glm PROPERTIES FOLDER "Dependencies")
 set_target_properties(glfw PROPERTIES FOLDER "Dependencies")
 set_target_properties(spdlog PROPERTIES FOLDER "Dependencies")
 set_target_properties(imgui_static PROPERTIES FOLDER "Dependencies")
+set_target_properties(yaml-cpp PROPERTIES FOLDER "Dependencies")
+set_target_properties(yaml-cpp-parse PROPERTIES FOLDER "Dependencies")
+set_target_properties(yaml-cpp-read PROPERTIES FOLDER "Dependencies")
+set_target_properties(yaml-cpp-sandbox PROPERTIES FOLDER "Dependencies")
 
 
 file(GLOB_RECURSE ENGINE CONFIGURE_DEPENDS
@@ -156,9 +162,10 @@ file(GLOB_RECURSE SANDBOX CONFIGURE_DEPENDS
 )
 
 add_library(${VE_ENGINE_TARGET} STATIC ${ENGINE})
-add_dependencies(${VE_ENGINE_TARGET} imgui_static)
+add_dependencies(${VE_ENGINE_TARGET} imgui_static yaml-cpp)
 # Include your own headers
 target_include_directories(${VE_ENGINE_TARGET} PUBLIC
+    ${DISCORD_SDK_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/Vectora_Engine
     ${CMAKE_SOURCE_DIR}/includes/entt
     ${CMAKE_SOURCE_DIR}/includes
@@ -179,6 +186,8 @@ set_target_properties(${VE_ENGINE_TARGET} PROPERTIES
 
 # Link libraries
 target_link_libraries(${VE_ENGINE_TARGET} PUBLIC
+    ${DISCORD_LIB_PATH}
+    yaml-cpp
     imgui_static
     glfw
     glm::glm
@@ -186,12 +195,17 @@ target_link_libraries(${VE_ENGINE_TARGET} PUBLIC
     OpenGL::GL
 ) # // BREAKPOINT
 
+target_include_directories(${VE_ENGINE_TARGET} SYSTEM PRIVATE
+    $<TARGET_PROPERTY:yaml-cpp,INTERFACE_INCLUDE_DIRECTORIES>
+)
+
 target_precompile_headers(${VE_ENGINE_TARGET} PRIVATE 
     "$<$<COMPILE_LANGUAGE:CXX>:vpch.h>"
 )
 
 add_executable(${VE_EDITOR_TARGET} ${EDITOR})
 target_include_directories(${VE_EDITOR_TARGET} PRIVATE
+    ${DISCORD_SDK_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/Vectora_Editor
     ${CMAKE_SOURCE_DIR}/includes/entt
     ${CMAKE_SOURCE_DIR}/includes
@@ -202,10 +216,11 @@ set_target_properties(${VE_EDITOR_TARGET} PROPERTIES
 )
 
 target_compile_definitions(${VE_EDITOR_TARGET} PRIVATE VE_BUILD_STATIC VE_PLATFORM_WINDOWS)
-target_link_libraries(${VE_EDITOR_TARGET} PUBLIC ${VE_ENGINE_TARGET})
+target_link_libraries(${VE_EDITOR_TARGET} PUBLIC ${VE_ENGINE_TARGET} ${DISCORD_LIB_PATH})
 
 add_executable(${VE_SANDBOX_TARGET} ${SANDBOX})
 target_include_directories(${VE_SANDBOX_TARGET} PRIVATE
+    ${DISCORD_SDK_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/Sandbox
     ${CMAKE_SOURCE_DIR}/Vectora_Engine
     ${CMAKE_SOURCE_DIR}/includes/entt
@@ -217,19 +232,9 @@ set_target_properties(${VE_SANDBOX_TARGET} PROPERTIES
 )
 
 target_compile_definitions(${VE_SANDBOX_TARGET} PRIVATE VE_BUILD_STATIC VE_PLATFORM_WINDOWS)
-target_link_libraries(${VE_SANDBOX_TARGET} PUBLIC ${VE_ENGINE_TARGET})
+target_link_libraries(${VE_SANDBOX_TARGET} PUBLIC ${VE_ENGINE_TARGET} ${DISCORD_LIB_PATH})
 
-#foreach(OUTPUTCONFIG Debug Release RelWithDebInfo MinSizeRel)
-#f   string(TOUPPER ${OUTPUTCONFIG} CONFIG_UPPER)
-#f   set_target_properties(${VE_EDITOR_TARGET} PROPERTIES
-#f       RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER} "${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM}"
-#f   )
-#f   set_target_properties(${VE_ENGINE_TARGET} PROPERTIES
-#f       RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER} "${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM}"
-#f       LIBRARY_OUTPUT_DIRECTORY_${CONFIG_UPPER} "${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM}"
-#f       ARCHIVE_OUTPUT_DIRECTORY_${CONFIG_UPPER} "${CMAKE_BINARY_DIR}/bin/${OUTPUTCONFIG}-${ENGINE_PLATFORM}"
-#f   )
-#fndforeach()
+
 
 # Forcing the cmake build output
 #${CMAKE_BINARY_DIR}/bin/$<CONFIG>-${ENGINE_PLATFORM}
@@ -248,6 +253,9 @@ add_custom_target(copy_shaders ALL
     # Ensure the destination directories exist first
     #COMMAND ${CMAKE_COMMAND} -E make_directory "${BASE_OUTPUT_DIR}/shaders"
     #COMMAND ${CMAKE_COMMAND} -E make_directory "${BASE_OUTPUT_DIR}/assets"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${DISCORD_SHARED_LIB}"
+            "${BASE_OUTPUT_DIR}"
 
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_SOURCE_DIR}/Vectora_Engine/shaders"
