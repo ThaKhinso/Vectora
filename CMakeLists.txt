@@ -87,7 +87,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     ImGuizmo
     GIT_REPOSITORY https://github.com/CedricGuillemet/ImGuizmo.git
-    GIT_TAG 1.83
+    GIT_TAG master # this is a bad idea
     GIT_SHALLOW TRUE
 )
 
@@ -143,10 +143,11 @@ set_target_properties(yaml-cpp PROPERTIES FOLDER "Dependencies")
 set_target_properties(yaml-cpp-parse PROPERTIES FOLDER "Dependencies")
 set_target_properties(yaml-cpp-read PROPERTIES FOLDER "Dependencies")
 set_target_properties(yaml-cpp-sandbox PROPERTIES FOLDER "Dependencies")
-set_target_properties(imguigizmo PROPERTIES FOLDER "Dependencies")
 
 
 file(GLOB_RECURSE ENGINE CONFIGURE_DEPENDS
+    ${imguizmo_SOURCE_DIR}/ImGuizmo.h
+    ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
     Vectora_Engine/*.cpp
     Vectora_Engine/*.c
     Vectora_Engine/*.h
@@ -155,6 +156,8 @@ file(GLOB_RECURSE ENGINE CONFIGURE_DEPENDS
 )
 
 file(GLOB_RECURSE EDITOR CONFIGURE_DEPENDS
+    ${imguizmo_SOURCE_DIR}/ImGuizmo.h
+    ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
     Vectora_Editor/*.cpp
     Vectora_Editor/*.c
     Vectora_Editor/*.h
@@ -169,7 +172,7 @@ file(GLOB_RECURSE SANDBOX CONFIGURE_DEPENDS
 )
 
 add_library(${VE_ENGINE_TARGET} STATIC ${ENGINE})
-add_dependencies(${VE_ENGINE_TARGET} imgui_static imguigizmo yaml-cpp)
+add_dependencies(${VE_ENGINE_TARGET} imgui_static yaml-cpp)
 # Include your own headers
 target_include_directories(${VE_ENGINE_TARGET} PUBLIC
     ${DISCORD_SDK_INCLUDE_DIR}
@@ -180,6 +183,8 @@ target_include_directories(${VE_ENGINE_TARGET} PUBLIC
 )
 
 target_compile_definitions(${VE_ENGINE_TARGET} PRIVATE IMGUI_DEFINE_MATH_OPERATORS VE_BUILD_STATIC VE_PLATFORM_WINDOWS GLFW_INCLUDE_NONE)
+target_compile_definitions(${VE_ENGINE_TARGET} PRIVATE "T(x)=x") 
+target_compile_definitions(${VE_ENGINE_TARGET} PUBLIC IMGUI_DEFINE_MATH_OPERATORS)
 target_compile_definitions(${VE_ENGINE_TARGET}
     PRIVATE
         $<$<CONFIG:Debug>:VE_ENABLE_ASSERTS>
