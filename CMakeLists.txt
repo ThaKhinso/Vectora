@@ -80,7 +80,14 @@ FetchContent_Declare(
 FetchContent_Declare(
     yaml-cpp
     GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-    GIT_TAG yaml-cpp-0.9.0 # Can be a tag (yaml-cpp-x.x.x), a commit hash, or a branch name (master)
+    GIT_TAG yaml-cpp-0.9.0
+    GIT_SHALLOW TRUE
+)
+
+FetchContent_Declare(
+    ImGuizmo
+    GIT_REPOSITORY https://github.com/CedricGuillemet/ImGuizmo.git
+    GIT_TAG 1.83
     GIT_SHALLOW TRUE
 )
 
@@ -88,7 +95,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 
-FetchContent_MakeAvailable(glfw glm spdlog imgui yaml-cpp)
+FetchContent_MakeAvailable(glfw glm spdlog imgui yaml-cpp ImGuizmo)
 get_property(glfwTargets
     DIRECTORY ${glfw_BINARY_DIR}
     PROPERTY BUILDSYSTEM_TARGETS
@@ -125,7 +132,6 @@ target_link_libraries(imgui_static PRIVATE
 )
 target_compile_definitions(imgui_static PRIVATE GLFW_INCLUDE_NONE)
 
-
 # --- OpenGL ---
 find_package(OpenGL REQUIRED)
 
@@ -137,6 +143,7 @@ set_target_properties(yaml-cpp PROPERTIES FOLDER "Dependencies")
 set_target_properties(yaml-cpp-parse PROPERTIES FOLDER "Dependencies")
 set_target_properties(yaml-cpp-read PROPERTIES FOLDER "Dependencies")
 set_target_properties(yaml-cpp-sandbox PROPERTIES FOLDER "Dependencies")
+set_target_properties(imguigizmo PROPERTIES FOLDER "Dependencies")
 
 
 file(GLOB_RECURSE ENGINE CONFIGURE_DEPENDS
@@ -162,7 +169,7 @@ file(GLOB_RECURSE SANDBOX CONFIGURE_DEPENDS
 )
 
 add_library(${VE_ENGINE_TARGET} STATIC ${ENGINE})
-add_dependencies(${VE_ENGINE_TARGET} imgui_static yaml-cpp)
+add_dependencies(${VE_ENGINE_TARGET} imgui_static imguigizmo yaml-cpp)
 # Include your own headers
 target_include_directories(${VE_ENGINE_TARGET} PUBLIC
     ${DISCORD_SDK_INCLUDE_DIR}
@@ -172,7 +179,7 @@ target_include_directories(${VE_ENGINE_TARGET} PUBLIC
     ${imgui_SOURCE_DIR}
 )
 
-target_compile_definitions(${VE_ENGINE_TARGET} PRIVATE VE_BUILD_STATIC VE_PLATFORM_WINDOWS GLFW_INCLUDE_NONE)
+target_compile_definitions(${VE_ENGINE_TARGET} PRIVATE IMGUI_DEFINE_MATH_OPERATORS VE_BUILD_STATIC VE_PLATFORM_WINDOWS GLFW_INCLUDE_NONE)
 target_compile_definitions(${VE_ENGINE_TARGET}
     PRIVATE
         $<$<CONFIG:Debug>:VE_ENABLE_ASSERTS>
