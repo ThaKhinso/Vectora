@@ -139,6 +139,17 @@ namespace Vectora {
 		
 		StartBatch();
 	}
+	void Renderer2D::BeginScene(const EditorCamera& camera)
+	{
+		VE_PROFILE_FUNCTION();
+
+		glm::mat4 viewProj = camera.GetViewProjection();
+
+		s_Data.TextureShader->Bind();
+		s_Data.TextureShader->setMat4("u_ViewProjection", viewProj);
+
+		StartBatch();
+	}
 	void Renderer2D::BeginScene(const OrthoGraphicCamera& camera)
 	{
 		VE_PROFILE_FUNCTION();

@@ -28,7 +28,7 @@ namespace Vectora {
 		m_FrameBuffer = Framebuffer::Create(fbSpec);
 
 		m_ActiveScene = CreateRef<Scene>();
-
+		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 #if asdfasfd
 		// Entity
 		auto square = m_ActiveScene->CreateEntity("Green Square");
@@ -102,7 +102,7 @@ namespace Vectora {
 		{
 			m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-
+			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
@@ -110,6 +110,7 @@ namespace Vectora {
 		if (m_ViewportFocused)
 			m_CameraController.OnUpdate(ts);
 
+		m_EditorCamera.OnUpdate(ts);
 		// Render
 		Renderer2D::ResetStats();
 		m_FrameBuffer->Bind();
@@ -117,7 +118,7 @@ namespace Vectora {
 		RenderCommand::Clear();
 
 		// Update scene
-		m_ActiveScene->OnUpdate(ts);
+		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
 		m_FrameBuffer->Unbind();
 	}
@@ -221,7 +222,7 @@ namespace Vectora {
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -233,11 +234,10 @@ namespace Vectora {
 		auto selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity && m_GizmoType != -1)
 		{
-			std::cout << "gizmo type: " << m_GizmoType << std::endl;
 			ImGuizmo::SetID(0);
 			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist();
-			VE_CORE_INFO("Drawing Gizmo for entity: {0}", selectedEntity.GetComponent<TagComponent>().Tag);
+			
 			float windowWidth = (float)ImGui::GetWindowWidth();
 			float windowHeight = (float)ImGui::GetWindowHeight();
 			ImVec2 windowPos = ImGui::GetWindowPos();
@@ -245,34 +245,16 @@ namespace Vectora {
 			ImGuizmo::SetRect(windowPos.x + minBound.x, windowPos.y + minBound.y, m_ViewportSize.x, m_ViewportSize.y);
 
 			// Camera
-			auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+			// auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
 			{
 
-				const auto& camera = cameraEntity.GetComponent<CameraComponent>().camera;
+				// const auto& camera = cameraEntity.GetComponent<CameraComponent>().camera;
 				
-				//auto& ct = cameraEntity.GetComponent<TransformComponent>();
-				//// Force the camera to look at the origin by rotating it 180 degrees
-				//ct.Rotation.y = glm::radians(180.0f);
 				
-				const glm::mat4& cameraProjection = camera.GetProjection();
-				glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
-				// Flip the Z-axis of the view matrix (Column 2 in 0-indexed GLM)
-				cameraView[2][0] = -cameraView[2][0];
-				cameraView[2][1] = -cameraView[2][1];
-				cameraView[2][2] = -cameraView[2][2];
-				cameraView[2][3] = -cameraView[2][3];
-
-				auto temp = cameraEntity.GetComponent<TransformComponent>().GetTransform();
-
-				auto& cameraTransform = cameraEntity.GetComponent<TransformComponent>();
-				//cameraTransform.Rotation.y = glm::radians(180.0f); // Face the positive Z direction
-				//cameraTransform.Translation.z = 10.0f;
-				// Entity transform
-				auto& tc = selectedEntity.GetComponent<TransformComponent>();
-				glm::mat4 transform = tc.GetTransform();
-				VE_CORE_TRACE("Camera Pos: {0}, {1}, {2}", cameraTransform.Translation.x, cameraTransform.Translation.y, cameraTransform.Translation.z);
-				VE_CORE_TRACE("Entity Pos: {0}, {1}, {2}", tc.Translation.x, tc.Translation.y, tc.Translation.z);
-
+				// Editor camera
+				const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
+				glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
+				
 				// Snapping
 				bool snap = Input::IsKeyPressed(Key::VE_KEY_LEFT_CONTROL);
 				float snapValue = 0.5f; // Snap to 0.5m for translation/scale
@@ -281,17 +263,10 @@ namespace Vectora {
 					snapValue = 45.0f;
 
 				float snapValues[3] = { snapValue, snapValue, snapValue };
-				// Matrix A: The one that works
-				glm::mat4 workingView = glm::lookAt(glm::vec3(0, 0.2, -10), glm::vec3(0, 0, 0.35), glm::vec3(0, 1, 0));
+				auto& tc = selectedEntity.GetComponent<TransformComponent>();
+				glm::mat4 transform = tc.GetTransform();
 
-				// Matrix B: The one that fails
-				glm::mat4 failingView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
-
-				// Log the 4th row (Translation) of both
-				VE_CORE_TRACE("Working View Z-Trans: {0}", workingView[3][2]);
-				VE_CORE_TRACE("Failing View Z-Trans: {0}", failingView[3][2]);
-
-				ImGuizmo::Manipulate(glm::value_ptr(temp), glm::value_ptr(cameraProjection),
+				ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
 					(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
 					nullptr, snap ? snapValues : nullptr);
 
@@ -317,7 +292,7 @@ namespace Vectora {
 	void EditorLayer::OnEvent(Event& e)
 	{
 		m_CameraController.OnEvent(e);
-
+		m_EditorCamera.OnEvent(e);
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(VE_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
 	}

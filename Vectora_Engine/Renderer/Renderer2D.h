@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Camera.h"
 #include "Renderer/OrthographiCamera.h"
+#include "Renderer/EditorCamera.h"
 #include "Texture.h"
 
 namespace Vectora {
@@ -10,7 +11,7 @@ namespace Vectora {
 		static void ShutDown();
 
 		static void BeginScene(const CameraC& camera, const glm::mat4& transform);
-		
+		static void BeginScene(const EditorCamera& camera); // TODO: Remove
 		static void BeginScene(const OrthoGraphicCamera& camera); // TODO: Remove
 		static void EndScene();
 

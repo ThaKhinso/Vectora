@@ -2,6 +2,7 @@
 
 #include "Vectora.h"
 #include "Panels/SceneHirearchyPanel.h"
+#include "Renderer/EditorCamera.h"
 
 namespace Vectora
 {
@@ -46,6 +47,8 @@ namespace Vectora
 
 		Ref<Scene> m_ActiveScene;
 		Entity m_SquareEntity;
+
+		EditorCamera m_EditorCamera;
 
 		Entity m_CameraEntity;
 		Entity m_SecondCamera;
