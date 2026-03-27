@@ -158,6 +158,8 @@ namespace Vectora {
 	bool SceneSerializer::Deserialize(const std::string& filepath)
 	{
 		std::ifstream stream(filepath);
+		if (!stream.is_open())
+			VE_CORE_ERROR("Could not open file '{0}'", filepath);
 		std::stringstream strStream;
 		strStream << stream.rdbuf();
 		YAML::Node data = YAML::Load(strStream.str());

@@ -23,21 +23,24 @@ namespace Vectora{
 			glBindTexture(TextureTarget(multisampled), id);
 		}
 
-		static void AttachColorTexture(uint32_t id, int samples, GLenum format, uint32_t width, uint32_t height, int index)
+		static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index)
 		{
 			bool multisampled = samples > 1;
 			// Bind the texture so OpenGL knows which one we are modifying. stupid 3.3 shits
 			glBindTexture(TextureTarget(multisampled), id);
 			if (multisampled)
 			{
-				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
 			}
 			else
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
 
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				// NOTE: Integer textures MUST use GL_NEAREST
+				GLenum filter = (internalFormat == GL_R32I) ? GL_NEAREST : GL_LINEAR;
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -66,6 +69,18 @@ namespace Vectora{
 			}
 
 			glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(multisampled), id, 0);
+		}
+
+		static GLenum FBTextureFormatToGL(FramebufferTextureFormat format)
+		{
+			switch (format)
+			{
+			case FramebufferTextureFormat::RGBA8:       return GL_RGBA8;
+			case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+			}
+
+			VE_CORE_ASSERT(false);
+			return 0;
 		}
 
 		static bool IsDepthFormat(FramebufferTextureFormat format)
@@ -127,7 +142,10 @@ namespace Vectora{
 				switch (m_ColorAttachmentSpecifications[i].TextureFormat)
 				{
 				case FramebufferTextureFormat::RGBA8:
-					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, m_Specification.Width, m_Specification.Height, i);
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
+					break;
+				case FramebufferTextureFormat::RED_INTEGER:
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_R32I, GL_RED_INTEGER, m_Specification.Width, m_Specification.Height, i);
 					break;
 				}
 			}
@@ -184,6 +202,25 @@ namespace Vectora{
 		m_Specification.Height = height;
 
 		Invalidate();
+	}
+
+	int OpenGLFramebuffer::ReadPixel(VE_UINT32 attachmentIndex, int x, int y)
+	{
+		VE_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
+
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+		int pixelData;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+		return pixelData;
+	}
+
+	void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+	{
+		VE_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
+		
+		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+
+		glClearBufferiv(GL_COLOR, attachmentIndex, &value);
 	}
 
 
