@@ -9,7 +9,7 @@ namespace Vectora {
 
 		// Color
 		RGBA8,
-
+		RED_INTEGER,
 		// Depth/stencil
 		DEPTH24STENCIL8,
 
@@ -54,6 +54,8 @@ namespace Vectora {
 		virtual void Unbind() = 0;
 
 		virtual void Resize(VE_UINT32 width, VE_UINT32 height) = 0;
+		virtual int ReadPixel(VE_UINT32 attachmentIndex, int x, int y) = 0;
+		virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
 
 		virtual uint32_t GetColorAttachmentRendererID(VE_UINT32 index = 0) const = 0;
 

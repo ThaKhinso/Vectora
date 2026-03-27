@@ -16,6 +16,8 @@ namespace Vectora {
 		virtual void Unbind() override;
 
 		virtual void Resize(VE_UINT32 width, VE_UINT32 height) override final;
+		virtual int ReadPixel(VE_UINT32 attachmentIndex, int x, int y) override final;
+		virtual void ClearAttachment(uint32_t attachmentIndex, int value) override final;
 
 		virtual uint32_t GetColorAttachmentRendererID(VE_UINT32 index = 0) const override { VE_CORE_ASSERT(index < m_ColorAttachments.size()); return m_ColorAttachments[index]; }
 

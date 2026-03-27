@@ -23,6 +23,7 @@ namespace Vectora
 
 		void NewScene();
 		void OpenScene();
+		void OpenScene(const std::string& filepath);
 		void SaveSceneAs();
 
 	private:
@@ -52,7 +53,7 @@ namespace Vectora
 
 		Entity m_CameraEntity;
 		Entity m_SecondCamera;
-
+		glm::vec2 m_ViewportBounds[2];
 		int m_GizmoType = -1;
 
 		bool m_PrimaryCamera = true;
