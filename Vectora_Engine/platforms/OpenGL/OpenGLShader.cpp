@@ -179,6 +179,12 @@ namespace Vectora {
 		glUniform1f(glGetUniformLocation(RenderID, name.c_str()), value);
 	}
 
+	void OpenGLShader::setFloat2(const std::string& name, float value1, float value2) const
+	{
+		VE_PROFILE_FUNCTION();
+		glUniform2f(glGetUniformLocation(RenderID, name.c_str()), value1, value2);
+	}
+
 	void OpenGLShader::setBool(const std::string& name, bool value) const {
 		glUniform1i(glGetUniformLocation(RenderID, name.c_str()), value);
 	}

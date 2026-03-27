@@ -7,6 +7,7 @@ in vec4 v_Color;
 in vec2 v_TexCoord;
 flat in float v_TexIndex;
 in float v_TilingFactor;
+flat in int v_EntityID;
 
 uniform sampler2D u_Textures[16];
 
@@ -34,5 +35,5 @@ void main()
 		case 15: texColor *= texture(u_Textures[15], v_TexCoord * v_TilingFactor); break;
 	}
 	color = texColor;
-	color2 = 50;
+	color2 = v_EntityID;
 }

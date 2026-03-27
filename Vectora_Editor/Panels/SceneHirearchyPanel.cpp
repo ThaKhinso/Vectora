@@ -52,6 +52,11 @@ namespace Vectora {
 		ImGui::End();
 	}
 
+	void SceneHirearchyPanel::SetSelectedEntity(Entity entity)
+	{
+		m_SelectionContext = entity;
+	}
+
 	void SceneHirearchyPanel::DrawEntityNode(Entity entity)
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;

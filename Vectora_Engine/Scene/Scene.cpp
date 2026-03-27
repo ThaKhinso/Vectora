@@ -92,7 +92,8 @@ namespace Vectora {
 				auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 				// The 'each' method is the preferred modern EnTT way
 				view.each([](auto entity, auto& transform, auto& sprite) {
-					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+					//Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+					Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 				});
 
 				Renderer2D::EndScene();
@@ -111,7 +112,8 @@ namespace Vectora {
 		{
 			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+			//Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 		}
 
 		Renderer2D::EndScene();

@@ -53,13 +53,14 @@ namespace Vectora {
 
 		
 		// utility uniform functions
-		void setBool(const std::string& name, bool value) const;
-		virtual void setInt(const std::string& name, int value) const override;
-		virtual void setFloat(const std::string& name, float value) const override;
-		virtual void setVec2(const std::string& name, float v1, float v2) const override;
-		virtual void setVec3(const std::string& name, const glm::vec3& vec4) const override;
-		virtual void setVec4(const std::string& name, const glm::vec4& vec4) const override;
-		virtual void setMat4(const std::string& name, const glm::mat4& trans) const override;
+		virtual void setBool(const std::string& name, bool value) const override final;
+		virtual void setInt(const std::string& name, int value) const override final;
+		virtual void setFloat(const std::string& name, float value) const override final;
+		virtual void setFloat2(const std::string& name, float value1, float value2) const override final;
+		virtual void setVec2(const std::string& name, float v1, float v2) const override final ;
+		virtual void setVec3(const std::string& name, const glm::vec3& vec4) const override final;
+		virtual void setVec4(const std::string& name, const glm::vec4& vec4) const override final;
+		virtual void setMat4(const std::string& name, const glm::mat4& trans) const override final;
 		virtual void SetIntArray(const std::string& name, int* values, uint32_t count) const override final;
 
 	private:
