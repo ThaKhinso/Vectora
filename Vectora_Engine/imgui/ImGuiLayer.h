@@ -30,7 +30,6 @@ namespace Vectora {
 		static ImGuiLayer* GetImguiLayerInstance() { return s_ImGuiLayerInstance; }
 	private:
 		bool m_BlockEvents = true;
-		float m_Time = 0.0f;
 		::ImGuiContext* m_Context;
 		static ImGuiLayer* s_ImGuiLayerInstance;
 	};

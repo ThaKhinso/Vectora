@@ -223,6 +223,7 @@ namespace Vectora {
 		}
 
 		m_SceneHierarchyPanel.OnImGuiRender();
+		m_ContentBrowserPanel.OnImGuiRender();
 
 		ImGui::Begin("Stats");
 		std::string name = "None";
@@ -265,12 +266,6 @@ namespace Vectora {
 			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist();
 			
-			//float windowWidth = (float)ImGui::GetWindowWidth();
-			//float windowHeight = (float)ImGui::GetWindowHeight();
-			//ImVec2 windowPos = ImGui::GetWindowPos();
-			//ImVec2 minBound = ImGui::GetWindowContentRegionMin(); // Accounts for title bar
-			//ImGuizmo::SetRect(windowPos.x + minBound.x, windowPos.y + minBound.y, m_ViewportSize.x, m_ViewportSize.y);
-
 			ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
 			// Camera
