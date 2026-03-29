@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Vectora.h"
-#include "Panels/SceneHirearchyPanel.h"
 #include "Renderer/EditorCamera.h"
+
+#include "Panels/SceneHirearchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 
 namespace Vectora
 {
@@ -63,5 +65,6 @@ namespace Vectora
 
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 		SceneHirearchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 	};
 }
