@@ -7,6 +7,8 @@
 #include "Scene/Components.h"
 
 namespace Vectora {
+	extern const std::filesystem::path g_AssetPath;
+
 	SceneHirearchyPanel::SceneHirearchyPanel(const Ref<Scene>& context)
 	{
 		SetContext(context);
@@ -323,6 +325,21 @@ namespace Vectora {
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component)
 			{
 				ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+		ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+			{
+				const wchar_t* path = (const wchar_t*)payload->Data;
+				std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+				component.Texture = Texture2D::Create(texturePath.string());
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+
+
+		ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
 			});
 
 	}

@@ -281,6 +281,10 @@ add_custom_target(copy_shaders ALL
             "${BASE_OUTPUT_DIR}/shaders"
 
     COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_SOURCE_DIR}/Vectora_Editor/Resources"
+            "${BASE_OUTPUT_DIR}/Resources"
+
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_SOURCE_DIR}/Sandbox/assets"
             "${BASE_OUTPUT_DIR}/assets"
 )
