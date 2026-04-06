@@ -286,8 +286,16 @@ namespace Vectora {
 				{
 					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
 					src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
-					src.texPath = std::filesystem::path(spriteRendererComponent["Texture"].as<std::string>());
-					
+					// I hate try catch, but well ....
+					try {
+						src.texPath = std::filesystem::path(spriteRendererComponent["Texture"].as<std::string>());
+
+						
+					}
+					catch (YAML::RepresentationException& e) {
+						VE_WARN("Texture component don't exist {0}", src.texPath.filename().string(), e.msg);
+						
+					}
 					Ref<Texture2D> texture = Texture2D::Create(src.texPath.string());
 					if (texture->IsLoaded())
 						src.Texture = texture;

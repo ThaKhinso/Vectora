@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Core/CmdArgumentHandler.h"
 #include "Scene/SceneSerializer.h"
 #include "Utils/PlatformUtils.h"
 #include "Math/Math.h"
@@ -32,6 +33,7 @@ namespace Vectora {
 
 		m_ActiveScene = CreateRef<Scene>();
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+		
 #if asdfasfd
 		// Entity
 		auto square = m_ActiveScene->CreateEntity("Green Square");
@@ -85,10 +87,19 @@ namespace Vectora {
 		/*SceneSerializer serializer(m_ActiveScene);
 		serializer.Deserialize("assets/scenes/Example.vectora");*/
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-
+		
 		//OpenScene("../../../Vectora_Editor/sceneees/PinkCubeEC.vectora");
 		/*SceneSerializer serializer(m_ActiveScene);
 		serializer.Serialize("assets/scenes/Example.vectora");*/
+		// Todo
+		const auto& args = CmdArgumentHandler::GetAllArguments();
+		if (args.size() > 1)
+		{
+			std::string filePath = args[1];
+			VE_WARN("Opening scene {0} from command line", filePath);
+			VE_WARN("Current Working directoy of the editor is {0}", std::filesystem::current_path().string());
+			OpenScene(filePath);
+		}
 	}
 
 	void EditorLayer::OnDetach()
@@ -212,6 +223,8 @@ namespace Vectora {
 		}
 		style.WindowMinSize.x = minWinSizeX;
 
+		
+
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))
@@ -275,6 +288,8 @@ namespace Vectora {
 
 		uint64_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
 		ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		
 
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -456,7 +471,11 @@ namespace Vectora {
 		if (serializer.Deserialize(path.string()))
 		{
 			m_ActiveScene = newScene;
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			if (m_ViewportSize.x > 0.f && m_ViewportSize.y > 0.f)
+			{
+				m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+
+			}
 			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		}
 	}
