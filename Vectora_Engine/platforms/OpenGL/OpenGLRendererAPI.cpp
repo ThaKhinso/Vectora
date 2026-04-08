@@ -29,6 +29,7 @@ namespace Vectora {
 	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, VE_UINT32 indexCount)
 	{
 		uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
+		vertexArray->Bind();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 		/*glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);*/
