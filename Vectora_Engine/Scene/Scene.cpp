@@ -278,9 +278,9 @@ namespace Vectora {
 				}
 				Renderer2D::EndScene();
 			}
-			else {
+			/*else {
 				VE_CORE_CRITICAL("No camera found");
-			}
+			}*/
 		}
 
 

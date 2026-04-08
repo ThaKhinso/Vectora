@@ -194,8 +194,8 @@ namespace Vectora {
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->setMat4("u_ViewProjection", viewProj);
 
-		/*s_Data.CircleShader->Bind();
-		s_Data.CircleShader->setMat4("u_ViewProjection", viewProj);*/
+		s_Data.CircleShader->Bind();
+		s_Data.CircleShader->setMat4("u_ViewProjection", viewProj);
 
 		StartBatch();
 	}
@@ -205,8 +205,8 @@ namespace Vectora {
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->setMat4("u_ViewProjection", camera.GetPV());
 		
-		/*s_Data.CircleShader->Bind();
-		s_Data.CircleShader->setMat4("u_ViewProjection", camera.GetPV());*/
+		s_Data.CircleShader->Bind();
+		s_Data.CircleShader->setMat4("u_ViewProjection", camera.GetPV());
 
 		StartBatch();
 	}

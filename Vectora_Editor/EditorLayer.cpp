@@ -98,13 +98,14 @@ namespace Vectora {
 		if (args.size() > 1)
 		{
 			std::string filePath = args[1];
-			VE_WARN("Opening scene {0} from command line", filePath);
-			VE_WARN("Current Working directoy of the editor is {0}", std::filesystem::current_path().string());
+			/*VE_WARN("Opening scene {0} from command line", filePath);
+			VE_WARN("Current Working directoy of the editor is {0}", std::filesystem::current_path().string());*/
 			OpenScene(filePath);
-			m_EditorScenePath = std::filesystem::path(filePath);
+			
 		}
 		else {
 			m_EditorScenePath = std::filesystem::path{};
+			NewScene();
 
 		}
 
@@ -477,6 +478,12 @@ namespace Vectora {
 	{
 		if (m_SceneState != SceneState::Edit)
 			OnSceneStop();
+		
+		if (!std::filesystem::exists(path))
+		{
+			VE_ERROR("Could not find scene file: {0}", path.string());
+			return;
+		}
 
 		if (path.extension().string() != ".vectora")
 		{
@@ -500,9 +507,9 @@ namespace Vectora {
 			{
 				m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			}
-			m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
 			m_ActiveScene = m_EditorScene;
+			m_SceneHierarchyPanel.SetContext(m_EditorScene);
 			m_EditorScenePath = path;
 		}
 	}
@@ -555,9 +562,11 @@ namespace Vectora {
 	void EditorLayer::OnSceneStop() {
 		m_SceneState = SceneState::Edit;
 		m_ActiveScene->OnRuntimeStop();
-		m_ActiveScene = m_EditorScene;
 
+		m_ActiveScene = m_EditorScene;
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+		m_SceneHierarchyPanel.SetSelectedEntity({});
 	}
 
 

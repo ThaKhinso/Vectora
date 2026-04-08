@@ -17,11 +17,15 @@ namespace Vectora {
 	{
 		ImGui::Begin("Content Browser");
 
-		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
+		if (m_CurrentDirectory.lexically_normal() != std::filesystem::path(g_AssetPath).lexically_normal())
 		{
 			if (ImGui::Button("<-"))
 			{
+				
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
+				VE_CORE_INFO("G asset path = {0}", std::filesystem::path(g_AssetPath).string());
+				VE_CORE_INFO("Curent Dir = {0}", m_CurrentDirectory.string());
+				VE_CORE_INFO("Curent Dir's parent = {0}", m_CurrentDirectory.parent_path().string());
 			}
 		}
 
@@ -36,38 +40,41 @@ namespace Vectora {
 
 		ImGui::Columns(columnCount, 0, false);
 		int id = 0;
-		for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
+		if(std::filesystem::exists(m_CurrentDirectory) && std::filesystem::is_directory(m_CurrentDirectory))
 		{
-			const auto& path = directoryEntry.path();
-			auto relativePath = std::filesystem::relative(path, g_AssetPath);
-			std::string filenameString = relativePath.filename().string();
-
-			ImGui::PushID(filenameString.c_str());
-			Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-			ImGui::ImageButton("", (ImTextureID)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
-
-			if (ImGui::BeginDragDropSource())
+			for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 			{
-				const wchar_t* itemPath = relativePath.c_str();
-				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
-				ImGui::EndDragDropSource();
-			}
+				const auto& path = directoryEntry.path();
+				auto relativePath = std::filesystem::relative(path, g_AssetPath);
+				std::string filenameString = relativePath.filename().string();
 
-			ImGui::PopStyleColor();
+				ImGui::PushID(filenameString.c_str());
+				Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+				ImGui::ImageButton("", (ImTextureID)icon->GetRendererID(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 
-			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-			{
-				if (directoryEntry.is_directory())
+				if (ImGui::BeginDragDropSource())
 				{
-					m_CurrentDirectory /= path.filename();
+					const wchar_t* itemPath = relativePath.c_str();
+					ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
+					ImGui::EndDragDropSource();
 				}
-			}
-			ImGui::TextWrapped(filenameString.c_str());
 
-			ImGui::NextColumn();
-			ImGui::PopID();
-			id++;
+				ImGui::PopStyleColor();
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					if (directoryEntry.is_directory())
+					{
+						m_CurrentDirectory /= path.filename();
+					}
+				}
+				ImGui::TextWrapped(filenameString.c_str());
+
+				ImGui::NextColumn();
+				ImGui::PopID();
+				id++;
+			}
 		}
 		ImGui::Columns(1);
 
