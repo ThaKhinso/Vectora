@@ -76,6 +76,11 @@ namespace Vectora {
 				id++;
 			}
 		}
+		else
+		{
+			// Fallback: If we somehow get lost, reset to root
+			m_CurrentDirectory = g_AssetPath;
+		}
 		ImGui::Columns(1);
 
 		ImGui::SliderFloat("Thumbnail Size", &thumbnailSize, 16, 512);
