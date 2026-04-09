@@ -100,6 +100,7 @@ namespace Vectora {
 		CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap, newScene.get());
 		CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap, newScene.get());
 		CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap, newScene.get());
+		CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap, newScene.get());
 
 		newScene->OnViewportResize(newScene->m_ViewportWidth, newScene->m_ViewportHeight);
 		return newScene;
@@ -175,6 +176,25 @@ namespace Vectora {
 
 				// Optional: Store the ID in your component
 				bc2d.RuntimeFixture = shapeId;
+			}
+
+			if (entity.HasComponent<CircleCollider2DComponent>())
+			{
+				auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
+
+				b2Circle circleShape;
+				circleShape.radius = cc2d.Radius;
+				circleShape.center = { cc2d.Offset.x, cc2d.Offset.y };
+				
+				b2ShapeDef shapeDef = b2DefaultShapeDef();
+				shapeDef.density = cc2d.Density;
+				shapeDef.material.friction = cc2d.Friction;
+				shapeDef.material.restitution = cc2d.Restitution;
+				worldDef.restitutionThreshold = cc2d.RestitutionThreshold;
+
+				b2ShapeId cir = b2CreateCircleShape(body, &shapeDef, &circleShape);
+
+				cc2d.RuntimeFixture = cir;
 			}
 		}
 	}
@@ -337,6 +357,7 @@ namespace Vectora {
 		CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
 		CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
 		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
 	}
 	Entity Scene::GetPrimaryCameraEntity()
 	{
@@ -400,6 +421,11 @@ namespace Vectora {
 
 	template<>
 	void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
 	{
 	}
 }
