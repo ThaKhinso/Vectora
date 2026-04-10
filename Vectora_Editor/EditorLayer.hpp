@@ -35,6 +35,7 @@ namespace Vectora
 		void OnSceneStop();
 		void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
 		
+		void OnOverlayRender();
 		void OnDuplicateEntity();
 		// UI Panels
 		void UI_Toolbar();
@@ -77,6 +78,7 @@ namespace Vectora
 		int m_GizmoType = -1;
 
 		bool m_PrimaryCamera = true;
+		bool m_ShowPhysicsColliders = true;
 
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 		SceneHirearchyPanel m_SceneHierarchyPanel;
