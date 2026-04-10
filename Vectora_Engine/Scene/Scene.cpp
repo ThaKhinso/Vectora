@@ -183,7 +183,7 @@ namespace Vectora {
 				auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
 
 				b2Circle circleShape;
-				circleShape.radius = cc2d.Radius;
+				circleShape.radius = transform.Scale.x * cc2d.Radius;
 				circleShape.center = { cc2d.Offset.x, cc2d.Offset.y };
 				
 				b2ShapeDef shapeDef = b2DefaultShapeDef();

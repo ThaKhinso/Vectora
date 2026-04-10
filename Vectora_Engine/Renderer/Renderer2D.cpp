@@ -32,6 +32,7 @@ namespace Vectora {
 	struct LineVertex
 	{
 		glm::vec3 Position;
+		//float Padding = 0.0f; // Manually fill the 4-byte hole
 		glm::vec4 Color;
 
 		// Editor-only
@@ -44,7 +45,7 @@ namespace Vectora {
 		static const uint32_t MaxIndices = MaxQuads * 6;
 		static const uint32_t MaxTextureSlots = 16;
 
-		float LineWidth = 0;
+		float LineWidth = 1;
 
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
@@ -146,6 +147,8 @@ namespace Vectora {
 			});
 		s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
 		s_Data.LineVertexBufferBase = new LineVertex[s_Data.MaxVertices];
+		VE_CORE_TRACE("LineVertex size: {0}", sizeof(LineVertex));
+		// Compare this output to your calculated layout stride.
 
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
@@ -207,6 +210,7 @@ namespace Vectora {
 		VE_PROFILE_FUNCTION();
 		delete[] s_Data.QuadVertexBufferBase;
 		delete[] s_Data.CircleVertexBufferBase;
+		delete[] s_Data.LineVertexBufferBase;
 	}
 	void Renderer2D::BeginScene(const CameraC& camera, const glm::mat4& transform)
 	{
@@ -218,6 +222,9 @@ namespace Vectora {
 		
 		s_Data.CircleShader->Bind();
 		s_Data.CircleShader->setMat4("u_ViewProjection", viewProj);
+
+		s_Data.LineShader->Bind();
+		s_Data.LineShader->setMat4("u_ViewProjection", viewProj);
 		StartBatch();
 	}
 	void Renderer2D::BeginScene(const EditorCamera& camera)
@@ -232,6 +239,8 @@ namespace Vectora {
 		s_Data.CircleShader->Bind();
 		s_Data.CircleShader->setMat4("u_ViewProjection", viewProj);
 
+		s_Data.LineShader->Bind();
+		s_Data.LineShader->setMat4("u_ViewProjection", viewProj);
 		StartBatch();
 	}
 	void Renderer2D::BeginScene(const OrthoGraphicCamera& camera)
@@ -243,6 +252,8 @@ namespace Vectora {
 		s_Data.CircleShader->Bind();
 		s_Data.CircleShader->setMat4("u_ViewProjection", camera.GetPV());
 
+		s_Data.LineShader->Bind();
+		s_Data.LineShader->setMat4("u_ViewProjection", camera.GetPV());
 		StartBatch();
 	}
 	void Renderer2D::EndScene()
@@ -463,7 +474,7 @@ namespace Vectora {
 		s_Data.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawLine(const glm::vec3& p0, glm::vec3& p1, const glm::vec4& color, int entityID)
+	void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID)
 	{
 		s_Data.LineVertexBufferPtr->Position = p0;
 		s_Data.LineVertexBufferPtr->Color = color;
@@ -485,10 +496,10 @@ namespace Vectora {
 		glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
 		glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
 
-		DrawLine(p0, p1, color);
-		DrawLine(p1, p2, color);
-		DrawLine(p2, p3, color);
-		DrawLine(p3, p0, color);
+		DrawLine(p0, p1, color, entityID);
+		DrawLine(p1, p2, color, entityID);
+		DrawLine(p2, p3, color, entityID);
+		DrawLine(p3, p0, color, entityID);
 	}
 
 	void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID)
@@ -497,10 +508,10 @@ namespace Vectora {
 		for (size_t i = 0; i < 4; i++)
 			lineVertices[i] = transform * s_Data.QuadVertexPositions[i];
 
-		DrawLine(lineVertices[0], lineVertices[1], color);
-		DrawLine(lineVertices[1], lineVertices[2], color);
-		DrawLine(lineVertices[2], lineVertices[3], color);
-		DrawLine(lineVertices[3], lineVertices[0], color);
+		DrawLine(lineVertices[0], lineVertices[1], color, entityID);
+		DrawLine(lineVertices[1], lineVertices[2], color, entityID);
+		DrawLine(lineVertices[2], lineVertices[3], color, entityID);
+		DrawLine(lineVertices[3], lineVertices[0], color, entityID);
 	}
 
 	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID)

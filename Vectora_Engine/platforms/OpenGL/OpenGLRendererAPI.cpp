@@ -41,7 +41,7 @@ namespace Vectora {
 	void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
 	{
 		glDrawArrays(GL_LINES, 0, vertexCount);
-		glActiveTexture(GL_TEXTURE0);
+		//glActiveTexture(GL_TEXTURE0);
 	}
 
 	void OpenGLRendererAPI::SetLineWidth(float width)
