@@ -211,6 +211,9 @@ namespace Vectora {
 		delete[] s_Data.CircleVertexBufferBase;
 		delete[] s_Data.LineVertexBufferBase;
 	}
+
+	// Remember to inverse the camera's transform first before passing it to this function
+	// This fucks me up everytime
 	void Renderer2D::BeginScene(const CameraC& camera, const glm::mat4& transform)
 	{
 		VE_PROFILE_FUNCTION();
