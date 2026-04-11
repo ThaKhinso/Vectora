@@ -33,6 +33,7 @@ namespace Vectora
 
 		void OnScenePlay();
 		void OnSceneStop();
+		void OnSceneSimulate();
 		void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
 		
 		void OnOverlayRender();
@@ -44,13 +45,10 @@ namespace Vectora
 		OrthographicCameraController m_CameraController;
 
 		// Temp
-		Ref<VertexArray> m_SquareVA;
-		Ref<Shader> m_FlatColorShader;
 		Ref<Texture2D> m_CheckerboardTexture;
 		Ref<Framebuffer> m_FrameBuffer;
 
-		Ref<Texture2D> m_IconPlay;
-		Ref<Texture2D> m_IconStop;
+		Ref<Texture2D> m_IconPlay, m_IconStop, m_IconSimulate;
 
 		glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 
@@ -85,7 +83,7 @@ namespace Vectora
 		ContentBrowserPanel m_ContentBrowserPanel;
 
 		enum class SceneState {
-			Edit = 0, Play = 1
+			Edit = 0, Play = 1, Simulate = 2
 		};
 		SceneState m_SceneState = SceneState::Edit;
 	};
