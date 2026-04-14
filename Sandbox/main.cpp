@@ -143,7 +143,7 @@ public:
     }
 
 	bool OnEscapePressed(Vectora::KeyPressedEvent& event) {
-		if (event.GetKeyCode() == VE_KEY_ESCAPE)
+		if (event.GetKeyCode() == Vectora::Key::VE_KEY_ESCAPE)
 		{
 			Vectora::Application::Get().SetRunning(false);
 		}
@@ -177,10 +177,10 @@ public:
     SandBox(const Vectora::ApplicationSpecification& spec)
 	: Vectora::Application(spec){
 		//PushLayer(new TestLayer() );
-		PushLayer(new Sandbox2D());
-		/*PushLayer(new BackGround());
+		//PushLayer(new Sandbox2D());
+		PushLayer(new BackGround());
 		PushLayer(new TileLayer());
-		PushLayer(new FlappyBird());*/
+		PushLayer(new FlappyBird());
         // SYNC CONTEXT: This prevents the Segfault.
 		// Only turns this on if you were building the core as a dll and linking to your app dynamically.
         /*auto* imguiLayer = (Vectora::ImGuiLayer*)Vectora::ImGuiLayer::GetImguiLayerInstance();

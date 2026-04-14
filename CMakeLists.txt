@@ -13,6 +13,12 @@ set(DISCORD_SDK_LIB_DIR "${DISCORD_SDK_ROOT}/lib/debug")
 set(DISCORD_SDK_BIN_DIR "${DISCORD_SDK_ROOT}/bin/debug")
 set(DISCORD_SDK_INCLUDE_DIR "${DISCORD_SDK_ROOT}/include")
 
+# --- Mono SDK (Static Setup) ---
+set(MONO_ROOT "${CMAKE_SOURCE_DIR}/Dependencies/mono")
+set(MONO_INCLUDE_DIR "${MONO_ROOT}/include")
+set(MONO_LIB_DIR "${MONO_ROOT}/lib")
+set(MONO_STATIC_LIB "${MONO_LIB_DIR}/libmono-static-sgen.lib")
+
 # Platform-specific Social SDK library paths tho currently windows is only supported for building out of the box
 if(WIN32)
     set(DISCORD_LIB_PATH "${DISCORD_SDK_LIB_DIR}/discord_partner_sdk.lib")
@@ -189,6 +195,7 @@ add_dependencies(${VE_ENGINE_TARGET} imgui_static yaml-cpp box2d)
 target_include_directories(${VE_ENGINE_TARGET} PUBLIC
     ${imguizmo_SOURCE_DIR}
     ${DISCORD_SDK_INCLUDE_DIR}
+    ${MONO_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/Vectora_Engine
     ${CMAKE_SOURCE_DIR}/includes/entt
     ${CMAKE_SOURCE_DIR}/includes
@@ -201,10 +208,8 @@ target_compile_definitions(${VE_ENGINE_TARGET} PRIVATE
     VE_PLATFORM_WINDOWS 
     GLFW_INCLUDE_NONE
     NOMINMAX # fuck you microsoft
-)
-target_compile_definitions(${VE_ENGINE_TARGET}
-    PRIVATE
-        $<$<CONFIG:Debug>:VE_ENABLE_ASSERTS>
+    MONO_INSTALLED
+    $<$<CONFIG:Debug>:VE_ENABLE_ASSERTS>
 )
 
 set_target_properties(${VE_ENGINE_TARGET} PROPERTIES
@@ -216,6 +221,11 @@ set_target_properties(${VE_ENGINE_TARGET} PROPERTIES
 # Link libraries
 target_link_libraries(${VE_ENGINE_TARGET} PUBLIC
     ${DISCORD_LIB_PATH}
+    ${MONO_STATIC_LIB}           # <--- Mono Static Library
+    Bcrypt.lib                   # <--- Mono Dependency
+    version.lib                  # <--- Mono Dependency
+    Winmm.lib                    # <--- Mono Dependency
+    Ws2_32.lib
     yaml-cpp
     imgui_static
     glfw
@@ -289,6 +299,8 @@ add_custom_target(copy_shaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${DISCORD_SHARED_LIB}"
             "${BASE_OUTPUT_DIR}"
+
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${MONO_LIB_DIR}/mono" "${BASE_OUTPUT_DIR}/mono"
 
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_SOURCE_DIR}/Vectora_Engine/shaders"
