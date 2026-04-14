@@ -65,7 +65,7 @@ void FlappyBird::OnUpdate(Vectora::Timestep ts)
 	// 2. Clamp it so it doesn't spin like a propeller
 	m_BirdRotation = std::clamp(targetRotation, -45.0f, 90.0f);
 	// 1. Input - The "Flap"
-	if (Vectora::Input::IsKeyPressed(VE_KEY_SPACE)) {
+	if (Vectora::Input::IsKeyPressed(Vectora::Key::VE_KEY_SPACE)) {
 		m_BirdVelocityY = m_FlapForce;
 	}
 
