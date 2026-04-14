@@ -5,6 +5,7 @@
 #include "Events/ApplicationEvent.h"
 #include "Debug/Instrumentor.h"
 #include "Utils/PlatformUtils.h"
+#include "Scripting/ScriptEngine.h"
 
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
@@ -38,6 +39,7 @@ namespace Vectora {
 		//keep track this
 		//layerstack = LayerStack();
 		Renderer::Init();
+		ScriptEngine::Init();
 
 		m_ImguiLayer = new ImGuiLayer();
 		PushOverlay(m_ImguiLayer);

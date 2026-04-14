@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 project(Vectora LANGUAGES C CXX)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+add_subdirectory(Vectora-ScriptCore)
+
 
 set(VE_ENGINE_TARGET Vectora_Engine)
 set(VE_SANDBOX_TARGET Sandbox)
@@ -190,7 +192,7 @@ file(GLOB_RECURSE SANDBOX CONFIGURE_DEPENDS
 )
 
 add_library(${VE_ENGINE_TARGET} STATIC ${ENGINE})
-add_dependencies(${VE_ENGINE_TARGET} imgui_static yaml-cpp box2d)
+add_dependencies(${VE_ENGINE_TARGET} imgui_static yaml-cpp box2d Vectora-ScriptCore)
 # Include your own headers
 target_include_directories(${VE_ENGINE_TARGET} PUBLIC
     ${imguizmo_SOURCE_DIR}
@@ -222,10 +224,25 @@ set_target_properties(${VE_ENGINE_TARGET} PROPERTIES
 target_link_libraries(${VE_ENGINE_TARGET} PUBLIC
     ${DISCORD_LIB_PATH}
     ${MONO_STATIC_LIB}           # <--- Mono Static Library
-    Bcrypt.lib                   # <--- Mono Dependency
-    version.lib                  # <--- Mono Dependency
-    Winmm.lib                    # <--- Mono Dependency
-    Ws2_32.lib
+
+    # --- Windows System Dependencies for Mono ---
+    Bcrypt.lib                   # Cryptography/Hashing
+    version.lib                  # File versioning
+    Winmm.lib                    # High-precision timers
+    Ws2_32.lib                   # Networking/Sockets
+    Rpcrt4.lib                   # RPC (Required for Mono threading/UUIDs)
+    Shlwapi.lib                  # Shell API (Path handling)
+    
+    # --- Static C/C++ Runtime Linking (Fixes the __imp_ errors) ---
+    # These libraries provide the static versions of the functions Mono is looking for
+    $<$<CONFIG:Debug>:libcmtd.lib>    # Static Debug CRT
+    $<$<CONFIG:Debug>:libcpmtd.lib>   # Static Debug C++ Standard Lib
+    $<$<CONFIG:Release>:libcmt.lib>   # Static Release CRT
+    $<$<CONFIG:Release>:libcpmt.lib>  # Static Release C++ Standard Lib
+
+    libucrt.lib                  # Static Universal CRT
+    libvcruntime.lib             # Static VC Runtime
+
     yaml-cpp
     imgui_static
     glfw
