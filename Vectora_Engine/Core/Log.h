@@ -9,6 +9,17 @@
 #include <spdlog/fmt/ostr.h>
 #pragma warning(pop)
 
+#include <spdlog/fmt/bundled/format.h> // Ensure we have the fmt header
+
+// This tells fmt how to handle any GLM vector or matrix
+template<typename T, glm::length_t L, glm::qualifier Q>
+struct fmt::formatter<glm::vec<L, T, Q>> : fmt::ostream_formatter {};
+
+template<typename T, glm::length_t C, glm::length_t R, glm::qualifier Q>
+struct fmt::formatter<glm::mat<C, R, T, Q>> : fmt::ostream_formatter {};
+
+template<typename T, glm::qualifier Q>
+struct fmt::formatter<glm::qua<T, Q>> : fmt::ostream_formatter {};
 
 namespace Vectora {
 	class VECTORA_API Log
