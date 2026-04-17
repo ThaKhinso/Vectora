@@ -15,13 +15,20 @@ namespace Vectora
         }
 
     }
-    public class Main
+    public static class InternalCalls
     {
-        public float FloatVar { get; set; }
-        public Main()
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void NativeLog(string text, int parameter);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void NativeLogV3(ref Vector3 parameter);
+    }
+    public class Entity
+    {
+        public Entity()
         {
             Console.WriteLine("Main constructor called");
-            NativeLog("Soegyi", 969);
+            InternalCalls.NativeLog("Soegyi", 969);
 
             Vector3 position = new Vector3(4, 2, 1);
             Log(ref position);
@@ -39,18 +46,14 @@ namespace Vectora
 
         private void Log(string text, int param)
         {
-            NativeLog(text, param);
+            InternalCalls.NativeLog(text, param);
         }
 
         private void Log(ref Vector3 param)
         {
-            NativeLog_Vector(ref param);
+            InternalCalls.NativeLogV3(ref param);
         }
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern static void NativeLog(string text, int parameter);
-
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern static void NativeLog_Vector(ref Vector3 parameter);
+        
     }
 }
