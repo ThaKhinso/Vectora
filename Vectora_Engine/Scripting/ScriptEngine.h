@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include "Scene/Entity.h"
+#include "Scene/Scene.hpp"
 
 extern "C" {
 	typedef struct _MonoClass MonoClass;
@@ -12,19 +13,6 @@ extern "C" {
 }
 
 namespace Vectora {
-	class ScriptEngine {
-	public:
-		static void Init();
-		static void Shutdown();
-		static void LoadAssembly(const std::filesystem::path& filePath);
-	private:
-		static void InitMono();
-		static void ShutdownMono();
-		static MonoObject* InstantiateClass(MonoClass* monoClass);
-		static void LoadAssemblyClasses(MonoAssembly* assembly);
-		friend class ScriptClass;
-	};
-
 	class ScriptClass
 	{
 	public:
@@ -44,7 +32,8 @@ namespace Vectora {
 	class ScriptInstance
 	{
 	public:
-		ScriptInstance(Ref<ScriptClass> scriptClass, Entity entity);
+		ScriptInstance() {};
+		ScriptInstance(Ref<ScriptClass> scriptClass);
 
 		void InvokeOnCreate();
 		void InvokeOnUpdate(float ts);
@@ -56,4 +45,26 @@ namespace Vectora {
 		MonoMethod* m_OnCreateMethod = nullptr;
 		MonoMethod* m_OnUpdateMethod = nullptr;
 	};
+
+	class ScriptEngine {
+	public:
+		static void Init();
+		static void Shutdown();
+		static void LoadAssembly(const std::filesystem::path& filePath);
+		static void OnRuntimeStart(Scene* scene);
+		static void OnRuntimeStop();
+
+		static void OnCreateEntity(Entity entity);
+
+		static bool EntityClassExists(const std::string& fullClassName) ;
+		static std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses();
+	private:
+		static void InitMono();
+		static void ShutdownMono();
+		static MonoObject* InstantiateClass(MonoClass* monoClass);
+		static void LoadAssemblyClasses(MonoAssembly* assembly);
+		friend class ScriptClass;
+	};
+
+	
 }

@@ -5,6 +5,7 @@
 #include "Components.h"
 #include "Renderer/Renderer2D.h"
 #include "Scene/ScriptableEntity.h"
+#include "Scripting/ScriptEngine.h"
 
 #include <box2d/box2d.h>
 #include <box2d/base.h>
@@ -137,11 +138,26 @@ namespace Vectora {
 	void Scene::OnRuntimeStart()
 	{
 		OnPhysics2DStart();
+		{
+			ScriptEngine::OnRuntimeStart(this);
+			auto view = m_Registry.view<ScriptComponent>();
+			for (auto& e : view) {
+				Entity entity = { e, this };
+				ScriptEngine::OnCreateEntity(entity);
+
+				
+			}
+		}
 	}
 
 	void Scene::OnRuntimeStop()
 	{
 		OnPhysics2DStop();
+		{
+			ScriptEngine::OnRuntimeStop();
+
+			
+		}
 	}
 
 	void Scene::OnSimulationStart()
@@ -458,6 +474,11 @@ namespace Vectora {
 	template<>
 	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
 	{
+	}
+
+	template<>
+	void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component) {
+
 	}
 
 	template<>
