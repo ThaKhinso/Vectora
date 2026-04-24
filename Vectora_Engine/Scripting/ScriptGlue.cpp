@@ -1,5 +1,7 @@
 #include "vpch.h"
-#include "Vectora.h"
+#include "Core/Log.h"
+#include "Core/KeyCodes.h"
+#include "Core/Input.h"
 #include "ScriptGlue.h"
 #include "ScriptEngine.h"
 
@@ -43,11 +45,16 @@ namespace Vectora {
 		}
 	}
 
+	static bool Input_IsKeyDown(VE_KEYCODE keyCode) {
+		return Input::IsKeyPressed(keyCode);
+	}
+
 	void ScriptGlue::RegisterFunctions()
 	{
 		VE_ADD_INTERNAL_CALLS(NativeLog);
 		VE_ADD_INTERNAL_CALLS(NativeLogV3);
 		VE_ADD_INTERNAL_CALLS(Entity_GetTranslation);
 		VE_ADD_INTERNAL_CALLS(Entity_SetTranslation);
+		VE_ADD_INTERNAL_CALLS(Input_IsKeyDown);
 	}
 }
