@@ -5,7 +5,7 @@ project(Vectora-ScriptCore LANGUAGES CSharp)
 set(CMAKE_DOTNET_SDK "Microsoft.NET.Sdk")
 
 # Sources
-file(GLOB_RECURSE SOURCES "*.cs")
+file(GLOB_RECURSE  SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cs")
 
 # Create the assembly (Library)
 add_library(Vectora-ScriptCore SHARED ${SOURCES})
