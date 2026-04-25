@@ -1,5 +1,9 @@
 #include "vpch.h"
+#include "Core/Log.h"
+#include "Core/KeyCodes.h"
+#include "Core/Input.h"
 #include "ScriptGlue.h"
+#include "ScriptEngine.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
@@ -18,9 +22,39 @@ namespace Vectora {
 		VE_WARN("{0}", *parameter);
 	}
 
+	static void Entity_GetTranslation(UUID entityID, glm::vec3* outTranslation) {
+		Scene* scene = ScriptEngine::GetSceneContext();
+		Entity entity = scene->GetEntityByUUID(entityID);
+		if (entity) {
+			*outTranslation = entity.GetComponent<TransformComponent>().Translation;
+		}
+		else {
+			VE_CORE_ERROR("Entity with UUID {0} not found!", entityID);
+			*outTranslation = glm::vec3(0.0f);
+		}
+	}
+
+	static void Entity_SetTranslation(UUID entityID, glm::vec3* translation) {
+		Scene* scene = ScriptEngine::GetSceneContext();
+		Entity entity = scene->GetEntityByUUID(entityID);
+		if (entity) {
+			entity.GetComponent<TransformComponent>().Translation = *translation;
+		}
+		else {
+			VE_CORE_ERROR("Entity with UUID {0} not found!", entityID);
+		}
+	}
+
+	static bool Input_IsKeyDown(VE_KEYCODE keyCode) {
+		return Input::IsKeyPressed(keyCode);
+	}
+
 	void ScriptGlue::RegisterFunctions()
 	{
 		VE_ADD_INTERNAL_CALLS(NativeLog);
 		VE_ADD_INTERNAL_CALLS(NativeLogV3);
+		VE_ADD_INTERNAL_CALLS(Entity_GetTranslation);
+		VE_ADD_INTERNAL_CALLS(Entity_SetTranslation);
+		VE_ADD_INTERNAL_CALLS(Input_IsKeyDown);
 	}
 }
