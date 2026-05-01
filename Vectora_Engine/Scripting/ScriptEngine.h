@@ -31,8 +31,39 @@ namespace Vectora {
 		ScriptFieldType Type;
 		std::string Name;
 
-		MonoClassField* ClassField;
+		MonoClassField* ClassField = nullptr;
 	};
+
+	struct ScriptFieldInstance
+	{
+		ScriptField Field;
+
+		ScriptFieldInstance()
+		{
+			memset(m_Buffer, 0, sizeof(m_Buffer));
+		}
+
+		template<typename T>
+		T GetValue()
+		{
+			static_assert(sizeof(T) <= 8, "Type too large!");
+			return *(T*)m_Buffer;
+		}
+
+		template<typename T>
+		void SetValue(T value)
+		{
+			static_assert(sizeof(T) <= 8, "Type too large!");
+			memcpy(m_Buffer, &value, sizeof(T));
+		}
+	private:
+		uint8_t m_Buffer[8];
+
+		friend class ScriptEngine;
+		friend class ScriptInstance;
+	};
+
+	using ScriptFieldMap = std::unordered_map<std::string, ScriptFieldInstance>;
 
 	class ScriptClass
 	{
@@ -69,6 +100,7 @@ namespace Vectora {
 		template<typename T>
 		T GetFieldValue(const std::string& name)
 		{
+			static_assert(sizeof(T) <= 8, "Type too large!");
 			bool success = GetFieldValueInternal(name, s_FieldValueBuffer);
 			if (!success)
 				return T();
@@ -77,13 +109,14 @@ namespace Vectora {
 		}
 
 		template<typename T>
-		void SetFieldValue(const std::string& name, const T& value)
+		void SetFieldValue(const std::string& name, T value)
 		{
+			static_assert(sizeof(T) <= 8, "Type too large!");
 			SetFieldValueInternal(name, &value);
 		}
 	private:
 		bool GetFieldValueInternal(const std::string& name, void* buffer);
-		bool SetFieldValueInternal(const std::string& name, const	void* value);
+		bool SetFieldValueInternal(const std::string& name, const void* value);
 	private:
 		Ref<ScriptClass> m_ScriptClass;
 
@@ -93,6 +126,8 @@ namespace Vectora {
 		MonoMethod* m_OnUpdateMethod = nullptr;
 
 		inline static char s_FieldValueBuffer[8];
+		friend class ScriptEngine;
+		friend struct ScriptFieldInstance;
 	};
 
 	class ScriptEngine {
@@ -114,7 +149,10 @@ namespace Vectora {
 		static Ref<ScriptInstance> GetEntityScriptInstance(UUID entityID);
 
 		static bool EntityClassExists(const std::string& fullClassName) ;
+
+		static Ref<ScriptClass> GetEntityClass(const std::string& name);
 		static std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses();
+		static ScriptFieldMap& GetScriptFieldMap(Entity entity);
 	private:
 		static void InitMono();
 		static void ShutdownMono();

@@ -152,6 +152,7 @@ namespace Vectora {
 
 		std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
 		std::unordered_map<UUID, Ref<ScriptInstance>> EntityInstances;
+		std::unordered_map<UUID, ScriptFieldMap> EntityScriptFields;
 
 		Scene* SceneContext = nullptr;
 	};
@@ -292,9 +293,18 @@ namespace Vectora {
 
 		if (ScriptEngine::EntityClassExists(sc.ClassName))
 		{
-			Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
-			s_Data->EntityInstances[entity.GetUUID()] = instance;
+			UUID entityID = entity.GetUUID();
 
+			Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
+			s_Data->EntityInstances[entityID] = instance;
+
+			// Copy field values
+			if (s_Data->EntityScriptFields.find(entityID) != s_Data->EntityScriptFields.end())
+			{
+				const ScriptFieldMap& fieldMap = s_Data->EntityScriptFields.at(entityID);
+				for (const auto& [name, fieldInstance] : fieldMap)
+					instance->SetFieldValueInternal(name, fieldInstance.m_Buffer);
+			}
 			instance->InvokeOnCreate();
 		}
 	}
@@ -327,9 +337,24 @@ namespace Vectora {
 	{
 		return s_Data->EntityClasses.find(fullClassName) != s_Data->EntityClasses.end();
 	}
+	Ref<ScriptClass> ScriptEngine::GetEntityClass(const std::string& name)
+	{
+		if (s_Data->EntityClasses.find(name) == s_Data->EntityClasses.end())
+			return nullptr;
+
+		return s_Data->EntityClasses.at(name);
+	}
 	std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetEntityClasses()
 	{
 		return s_Data->EntityClasses;
+	}
+
+	ScriptFieldMap& ScriptEngine::GetScriptFieldMap(Entity entity)
+	{
+		VE_CORE_ASSERT(entity);
+
+		UUID entityID = entity.GetUUID();
+		return s_Data->EntityScriptFields[entityID];
 	}
 
 	MonoObject* ScriptEngine::InstantiateClass(MonoClass* monoClass)
