@@ -9,6 +9,7 @@
 #include "Scene/SceneSerializer.h"
 #include "Utils/PlatformUtils.h"
 #include "Math/Math.h"
+#include "Scripting/ScriptEngine.h"
 
 namespace Vectora {
 	extern const std::filesystem::path g_AssetPath;
@@ -217,7 +218,13 @@ namespace Vectora {
 				if (ImGui::MenuItem("Exit")) Application::Get().SetRunning(false);
 				ImGui::EndMenu();
 			}
+			if (ImGui::BeginMenu("Script"))
+			{
+				if (ImGui::MenuItem("Reload assembly", "Ctrl+R"))
+					ScriptEngine::ReloadAssembly();
 
+				ImGui::EndMenu();
+			}
 			ImGui::EndMenuBar();
 		}
 
@@ -403,8 +410,15 @@ namespace Vectora {
 			}
 			case Key::VE_KEY_R:
 			{
-				if (!ImGuizmo::IsUsing())
-					m_GizmoType = ImGuizmo::OPERATION::SCALE;
+				if (control)
+				{
+					ScriptEngine::ReloadAssembly();
+				}
+				else
+				{
+					if (!ImGuizmo::IsUsing())
+						m_GizmoType = ImGuizmo::OPERATION::SCALE;
+				}
 				break;
 			}
 		}

@@ -207,7 +207,7 @@ set(EDITOR ${INTERNAL_EDITOR_SOURCES} ${IMGUIZMO_SOURCES})
 set(SANDBOX ${INTERNAL_SANDBOX_SOURCES})
 
 add_library(${VE_ENGINE_TARGET} STATIC ${ENGINE})
-add_dependencies(${VE_ENGINE_TARGET} imgui_static yaml-cpp box2d Vectora-ScriptCore Sandbox-Scripts)
+add_dependencies(${VE_ENGINE_TARGET} imgui_static yaml-cpp box2d Vectora-ScriptCore)
 # Include your own headers
 target_include_directories(${VE_ENGINE_TARGET} PUBLIC
     ${imguizmo_SOURCE_DIR}

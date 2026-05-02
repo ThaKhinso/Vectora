@@ -126,6 +126,9 @@ namespace Vectora {
 		MonoAssembly* AppAssembly = nullptr;
 		MonoImage* AppAssemblyImage = nullptr;
 
+		std::filesystem::path CoreAssemblyFilepath;
+		std::filesystem::path AppAssemblyFilepath;
+
 		ScriptClass EntityClass;
 
 		std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
@@ -202,12 +205,13 @@ namespace Vectora {
 	{
 		s_Data = new ScriptEngineData();
 		InitMono();
+		ScriptGlue::RegisterFunctions();
+
 		LoadAssembly("Vectora-ScriptCore.dll");
 		LoadAppAssembly("Sandbox-Scripts.dll");
 		LoadAssemblyClasses();
 
 		ScriptGlue::RegisterComponents();
-		ScriptGlue::RegisterFunctions();
 
 		//MonoObject* instance = s_Data->EntityClass
 		s_Data->EntityClass = ScriptClass("Vectora", "Entity", true);
@@ -231,9 +235,11 @@ namespace Vectora {
 	}
 	void ScriptEngine::ShutdownMono()
 	{
-		//mono_domain_unload(s_Data->AppDomain);
+		mono_domain_set(mono_get_root_domain(), false);
+		mono_domain_unload(s_Data->AppDomain);
+
 		s_Data->AppDomain = nullptr;
-		//mono_jit_cleanup(s_Data->RootDomain);
+		mono_jit_cleanup(s_Data->RootDomain);
 		s_Data->RootDomain = nullptr;
 	}
 	void ScriptEngine::LoadAssembly(const std::filesystem::path& filePath)
@@ -241,14 +247,14 @@ namespace Vectora {
 		s_Data->AppDomain = mono_domain_create_appdomain(const_cast<char*>("VectoraScriptRuntime"), nullptr);
 		mono_domain_set(s_Data->AppDomain, true);
 
-
+		s_Data->CoreAssemblyFilepath = filePath;
 		s_Data->CoreAssembly = Utils::LoadMonoAssembly(filePath);
 		s_Data->CoreAssemblyImage = mono_assembly_get_image(s_Data->CoreAssembly);
 	}
 
 	void ScriptEngine::LoadAppAssembly(const std::filesystem::path& filepath)
 	{
-		// Move this maybe
+		s_Data->AppAssemblyFilepath = filepath;
 		s_Data->AppAssembly = Utils::LoadMonoAssembly(filepath);
 		auto assemb = s_Data->AppAssembly;
 		s_Data->AppAssemblyImage = mono_assembly_get_image(s_Data->AppAssembly);
@@ -264,6 +270,21 @@ namespace Vectora {
 	{
 		s_Data->SceneContext = nullptr;
 		s_Data->EntityInstances.clear();
+	}
+	void ScriptEngine::ReloadAssembly()
+	{
+		mono_domain_set(mono_get_root_domain(), false);
+
+		mono_domain_unload(s_Data->AppDomain);
+
+		LoadAssembly(s_Data->CoreAssemblyFilepath);
+		LoadAppAssembly(s_Data->AppAssemblyFilepath);
+		LoadAssemblyClasses();
+
+		ScriptGlue::RegisterComponents();
+
+		// Retrieve and instantiate class
+		s_Data->EntityClass = ScriptClass("Vectora", "Entity", true);
 	}
 	void ScriptEngine::OnCreateEntity(Entity entity)
 	{

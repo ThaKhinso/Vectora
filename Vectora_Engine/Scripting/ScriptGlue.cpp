@@ -116,6 +116,8 @@ namespace Vectora {
 
 	void ScriptGlue::RegisterFunctions()
 	{
+		
+
 		VE_ADD_INTERNAL_CALLS(NativeLogV3);
 		VE_ADD_INTERNAL_CALLS(TransformComponent_GetTranslation);
 		VE_ADD_INTERNAL_CALLS(TransformComponent_SetTranslation);
@@ -159,6 +161,7 @@ namespace Vectora {
 
 	void ScriptGlue::RegisterComponents()
 	{
+		s_EntityHasComponentFunc.clear();
 		RegisterComponent(AllComponents{});
 
 	}

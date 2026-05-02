@@ -18,7 +18,6 @@ set_property(TARGET Sandbox-Scripts PROPERTY DOTNET_TARGET_FRAMEWORK "net472")
 target_link_libraries(Sandbox-Scripts PUBLIC Vectora-ScriptCore)
 
 # Ensure the output goes to the same unified folder as the engine and Core API
-set_target_properties(Sandbox-Scripts PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${BASE_OUTPUT_DIR}"
-    ARCHIVE_OUTPUT_DIRECTORY "${BASE_OUTPUT_DIR}"
+set_target_properties(Sandbox-Scripts PROPERTIES BASE_OUTPUT_DIR
+    "${CMAKE_BINARY_DIR}/bin/$<CONFIG>-${ENGINE_PLATFORM}"
 )
